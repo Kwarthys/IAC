@@ -11,8 +11,8 @@ public class Day
     private ArrayList<Rituel> rituels = new ArrayList<Rituel>();     //liste des rituels
     private int id;                                             //id des jours
     private String name;                                        //nom des jours
-    private Date alarmHour;                                     //heure de réveil
-    private Date classHour;                                     //heure de début des cours
+    private Hour alarmHour;                                     //heure de réveil
+    private Hour classHour;                                     //heure de début des cours
 
     public ArrayList<Rituel> getRituels() {
         return rituels;
@@ -20,6 +20,14 @@ public class Day
 
     public void setRituels(ArrayList<Rituel> rituels) {
         this.rituels = rituels;
+    }
+
+    public void setAlarmHour(Hour alarmHour) {
+        this.alarmHour = alarmHour;
+    }
+
+    public void setClassHour(Hour classHour) {
+        this.classHour = classHour;
     }
 
     public int getId() {
@@ -38,33 +46,18 @@ public class Day
         this.name = name;
     }
 
-    public Date getAlarmHour() {
-        return alarmHour;
-    }
-
-    public void setAlarmHour(Date alarmHour) {
-        this.alarmHour = alarmHour;
-    }
-
-    public Date getClassHour() {
-        return classHour;
-    }
-
-    public void setClassHour(Date classHour) {
-        this.classHour = classHour;
-    }
-
     public void AddRituel(Rituel r)
     {
         rituels.add(r);
     }
 
-    public void ShowDay() {}
+    public void ShowDay() {}                                    //TODO
 
-    public Date CalculateAlarmHour(){
-        Date newAlarmHour =this.classHour;
-        for(Rituel r:rituels){
-            newAlarmHour.getTime();
+    public Hour CalculateAlarmHour(){
+        Hour newAlarmHour = this.classHour;
+        for(Rituel r:rituels) {
+            newAlarmHour.setHours(newAlarmHour.getHours() - (r.getLasting() % 60));
+            newAlarmHour.setMinutes(newAlarmHour.getMinutes() - (r.getLasting() - 60));
         }
         return newAlarmHour;
     }
