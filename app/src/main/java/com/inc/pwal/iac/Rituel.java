@@ -4,6 +4,7 @@ package com.inc.pwal.iac;
  * Created by Kwarthys on 03/05/2016.
  */
 public class Rituel {
+    //définit les rituels
 
     private int id;
     private String name;

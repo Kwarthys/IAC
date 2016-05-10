@@ -4,6 +4,7 @@ package com.inc.pwal.iac;
  * Created by Kwarthys on 03/05/2016.
  */
 public class Alarm {
+    //définit les sonneries
 
     private int id;
     private String path;

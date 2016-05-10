@@ -4,6 +4,7 @@ package com.inc.pwal.iac;
  * Created by Portable Pierre on 03/05/2016.
  */
 public class Hour {
+    //outil pour faciliter les calculs d'horaires
 
     private int hours;
     private int minutes;

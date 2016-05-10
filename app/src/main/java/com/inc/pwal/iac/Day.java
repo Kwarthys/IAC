@@ -6,8 +6,9 @@ import java.util.Date;
 /**
  * Created by Kwarthys on 03/05/2016.
  */
-public class Day
-{
+public class Day {
+    //définit les jours
+
     private ArrayList<Rituel> rituels = new ArrayList<Rituel>();     //liste des rituels
     private int id;                                             //id des jours
     private String name;                                        //nom des jours
@@ -46,16 +47,16 @@ public class Day
         this.name = name;
     }
 
-    public void AddRituel(Rituel r)
-    {
+    public void AddRituel(Rituel r) {
         rituels.add(r);
     }
 
-    public void ShowDay() {}                                    //TODO
+    public void ShowDay() {
+    }                                    //TODO
 
-    public Hour CalculateAlarmHour(){
+    public Hour CalculateAlarmHour() {
         Hour newAlarmHour = this.classHour;
-        for(Rituel r:rituels) {
+        for (Rituel r : rituels) {
             newAlarmHour.setHours(newAlarmHour.getHours() - (r.getLasting() % 60));
             newAlarmHour.setMinutes(newAlarmHour.getMinutes() - (r.getLasting() - 60));
         }
