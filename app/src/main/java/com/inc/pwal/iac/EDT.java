@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
@@ -18,5 +19,109 @@ import java.util.Scanner;
  */
 public class EDT
 {
+    public ArrayList<SchoolClass> cours = new ArrayList<SchoolClass>();
+
+    @SuppressWarnings("deprecation")
+    public void makeEDT(String filename) throws IOException
+    {
+        Scanner sc = new Scanner(new File(filename));
+
+        SchoolClass leCour = new SchoolClass();
+
+        while(sc.hasNext())
+        {
+            String str = sc.next();
+            String summary ="";
+            String prof="";
+            String dtstart="";
+            String location="";
+
+            if(str.contains("SUMMARY"))
+            {
+                //System.out.println("PWAL" + str);
+                summary = new String(str);
+                String[] strs = summary.split(":");
+                summary = strs[1];
+                str = sc.next();
+                do
+                {
+                    summary = summary + " " + str;
+                    str = sc.next();
+                }while(!str.contains("DESCRIPTION"));
+
+                //System.out.println(summary);
+                leCour.setMat(summary);
+            }
+
+            if(str.contains("Professeur"))
+            {
+                prof = str;
+
+                prof = new String(str);
+                String[] strs = prof.split(":");
+	    		   /*for(String s : strs)
+	    			   System.out.println(s);
+    			   System.out.println();*/
+                prof = strs[strs.length-1];
+
+                str = sc.next();
+                do
+                {
+                    prof = prof + " " + str;
+                    str = sc.next();
+                }while(!str.contains("Groupe"));
+
+                leCour.setProf(prof);
+                //System.out.println(prof);
+            }
+
+            if(str.contains("DTSTART"))
+            {
+                dtstart = str;
+                //System.out.println(dtstart);
+                dtstart = dtstart.replace("DTSTART:", "");
+                //System.out.println(dtstart);
+                String[] s = dtstart.split("T");
+                String laDate = s[0];
+                String lHeure = s[1];
+                //System.out.println(laDate + " // " + lHeure);
+                int annee = Integer.valueOf(laDate.substring(0, 4));
+                int mois = Integer.valueOf(laDate.substring(4, 6));
+                int jour = Integer.valueOf(laDate.substring(6, 8));
+                int heure = Integer.valueOf(lHeure.substring(0, 2));
+                int minute = Integer.valueOf(lHeure.substring(2, 4));
+                //System.out.println(annee + "/" + mois + "/" + jour + " : " + heure + "h" + minute);
+                Date sortie = new Date(annee-1900, mois, jour, heure, minute, 0);
+                //cours.add(sortie);
+                leCour.setDate(sortie);
+            }
+
+            if(str.contains("LOCATION"))
+            {
+                location = new String(str);
+                String[] strs = location.split(":");
+                location = strs[1];
+                leCour.setSalle(location);
+                //System.out.println(location);
+
+                if(leCour.isValid())
+                {
+                    cours.add(new SchoolClass(leCour));
+                    leCour.reset();
+                }
+                else
+                    leCour.reset();
+            }
+
+
+
+        }
+
+        sc.close();
+        for(SchoolClass s : cours)
+        {
+            s.show();
+        }
+    }
 
 }
