@@ -20,13 +20,13 @@ import java.util.Scanner;
 public class EDT
 {
 
-    public ArrayList<SchoolClass> cours = new ArrayList<SchoolClass>();
+    private ArrayList<SchoolClass> cours = new ArrayList<SchoolClass>();
     public ArrayList<SchoolClass> classSoon = new ArrayList<SchoolClass>();
 
     static private long MILLISECOND_2WEEKS = 1209600000L;
 
     @SuppressWarnings("deprecation")
-    public void makeEDT(String filename) throws IOException
+    public ArrayList<SchoolClass> makeEDT(String filename) throws IOException
     {
         Scanner sc = new Scanner(new File(filename));
 
@@ -121,10 +121,13 @@ public class EDT
 
 
         }
+
+        processEDT();
+        return classSoon;
     }
 
     @SuppressWarnings("deprecation")
-    private void processEDT(String filename)
+    private void processEDT()
     {
         //MS1970 date - MS1970 today = MStoday->date
         //Nettoyage des cours hors des deux semaines suivantes
