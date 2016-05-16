@@ -25,5 +25,12 @@ public class Hour {
         this.minutes = minutes;
     }
 
-
+    public Hour(int hours, int minutes) {
+        this.hours = hours;
+        if (minutes < 60) this.minutes = minutes;
+        else {
+            this.hours+=minutes%60;
+            this.minutes+=(minutes-60*minutes%60);
+        }
+    }
 }

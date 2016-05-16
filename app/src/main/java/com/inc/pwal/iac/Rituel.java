@@ -15,6 +15,13 @@ public class Rituel {
         return id;
     }
 
+    public Rituel(int id, String name, int lasting, String icone) {
+        this.id = id;
+        this.name = name;
+        this.lasting = lasting;
+        this.icone = icone;
+    }
+
     public void setId(int id) {
         this.id = id;
     }

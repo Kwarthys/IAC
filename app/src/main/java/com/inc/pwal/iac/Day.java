@@ -15,6 +15,14 @@ public class Day {
     private Hour alarmHour;                                     //heure de réveil
     private Hour classHour;                                     //heure de début des cours
 
+    public Day(ArrayList<Rituel> rituels, int id, String name, Hour alarmHour, Hour classHour) {
+        this.rituels = rituels;
+        this.id = id;
+        this.name = name;
+        this.alarmHour = alarmHour;
+        this.classHour = classHour;
+    }
+
     public ArrayList<Rituel> getRituels() {
         return rituels;
     }

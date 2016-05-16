@@ -39,6 +39,13 @@ public class Alarm {
         return volume;
     }
 
+    public Alarm(int id, String path, boolean isChosen, int volume) {
+        this.id = id;
+        this.path = path;
+        this.isChosen = isChosen;
+        this.volume = volume;
+    }
+
     public void setVolume(int volume) {
         this.volume = volume;
     }
