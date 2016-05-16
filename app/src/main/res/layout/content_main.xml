@@ -13,73 +13,65 @@
     tools:showIn="@layout/activity_main">
 
     <Button
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Lundi"
-        android:textAlignment="center"
-        android:id="@+id/mondayButton"
+        android:id="@+id/buttonMonday"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="5dp"
+        android:textAlignment="center" />
 
     <Button
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mardi"
+        android:id="@+id/buttonTuesday"
+        android:layout_marginTop="25dp"
         android:textAlignment="center"
-        android:id="@+id/tuesdayButton"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/mondayButton"
-        android:layout_alignStart="@+id/mondayButton" />
-
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Mercredi"
-        android:textAlignment="center"
-        android:id="@+id/wednesdayButton"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/tuesdayButton"
-        android:layout_alignStart="@+id/tuesdayButton" />
-
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Jeudi"
-        android:textAlignment="center"
-        android:id="@+id/thursdayButton"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/wednesdayButton"
-        android:layout_alignEnd="@+id/fridayButton" />
-
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Vendredi"
-        android:textAlignment="center"
-        android:id="@+id/fridayButton"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/thursdayButton"
-        android:layout_alignEnd="@+id/tuesdayButton" />
-
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Samedi"
-        android:textAlignment="center"
-        android:id="@+id/saturdayButton"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/fridayButton"
+        android:layout_below="@+id/buttonMonday"
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Dimanche"
+        android:id="@+id/buttonWednesday"
+        android:layout_marginTop="25dp"
         android:textAlignment="center"
-        android:id="@+id/sundayButton"
-        android:layout_below="@+id/saturdayButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:layout_below="@+id/buttonTuesday"
+        android:layout_centerHorizontal="true" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonThursday"
+        android:layout_marginTop="25dp"
+        android:textAlignment="center"
+        android:layout_below="@+id/buttonWednesday"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonFriday"
+        android:layout_marginTop="25dp"
+        android:textAlignment="center"
+        android:layout_below="@+id/buttonThursday"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonSaturday"
+        android:layout_marginTop="25dp"
+        android:textAlignment="center"
+        android:layout_below="@+id/buttonFriday"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonSunday"
+        android:textAlignment="center"
+        android:layout_below="@+id/buttonSaturday"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="25dp" />
 </RelativeLayout>

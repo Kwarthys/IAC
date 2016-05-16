@@ -8,18 +8,18 @@ public class Rituel {
 
     private int id;
     private String name;
-    private int lasting;
+    private Hour lasting;
     private String icone;
+
+    public Rituel(int id, String name, int lastingMin, int lastingHour, String icone) {
+        this.id = id;
+        this.name = name;
+        this.lasting = new Hour (lastingHour,lastingMin);
+        this.icone = icone;
+    }
 
     public int getId() {
         return id;
-    }
-
-    public Rituel(int id, String name, int lasting, String icone) {
-        this.id = id;
-        this.name = name;
-        this.lasting = lasting;
-        this.icone = icone;
     }
 
     public void setId(int id) {
@@ -34,12 +34,13 @@ public class Rituel {
         this.name = name;
     }
 
-    public int getLasting() {
+    public Hour getLasting() {
         return lasting;
     }
 
-    public void setLasting(int lasting) {
-        this.lasting = lasting;
+    public void setLasting(int lastingH,int lastingM) {
+        this.lasting.setHours(lastingH);
+        this.lasting.setMinutes(lastingM);
     }
 
     public String getIcone() {

@@ -28,17 +28,20 @@ public class MainActivity extends AppCompatActivity {   //activité du menu prin
     @Override
    protected void onCreate(Bundle savedInstanceState)
     {
-        rit1 = new Rituel(1,"douche",15,"pwal");
+        rit1 = new Rituel(1,"douche",25,0,"pwal");
         ArrayList<Rituel> rituels = new ArrayList<Rituel>();
         rituels.add(rit1);
-        day1=new Day(rituels,1,"Lundi",new Hour(8,5),new Hour(12,0));
+        day1=new Day(rituels,1,"Lundi",new Hour(12,0));
         super.onCreate(savedInstanceState);
-        //int view = R.layout.activity_main;
-        //setContentView(view);
-        Button button = new Button(this);
-        RelativeLayout pwal = new RelativeLayout(this);
-        pwal.addView(button);
-        setContentView(pwal);
+
+        int view = R.layout.activity_main;
+        setContentView(view);
+
+        Button buttonMonday = (Button) findViewById(R.id.buttonMonday);
+        int H = day1.getAlarmHour().getHours();
+        int M = day1.getAlarmHour().getMinutes();
+        buttonMonday.setText("Lundi "+H+":"+M);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }

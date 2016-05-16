@@ -15,12 +15,13 @@ public class Day {
     private Hour alarmHour;                                     //heure de réveil
     private Hour classHour;                                     //heure de début des cours
 
-    public Day(ArrayList<Rituel> rituels, int id, String name, Hour alarmHour, Hour classHour) {
+
+    public Day(ArrayList<Rituel> rituels, int id, String name, Hour classHour) {
         this.rituels = rituels;
         this.id = id;
         this.name = name;
-        this.alarmHour = alarmHour;
         this.classHour = classHour;
+        this.alarmHour = CalculateAlarmHour();
     }
 
     public ArrayList<Rituel> getRituels() {
@@ -29,6 +30,14 @@ public class Day {
 
     public void setRituels(ArrayList<Rituel> rituels) {
         this.rituels = rituels;
+    }
+
+    public Hour getAlarmHour() {
+        return alarmHour;
+    }
+
+    public Hour getClassHour() {
+        return classHour;
     }
 
     public void setAlarmHour(Hour alarmHour) {
@@ -59,14 +68,19 @@ public class Day {
         rituels.add(r);
     }
 
-    public void ShowDay() {
+    public void showDay() {
     }                                    //TODO
 
     public Hour CalculateAlarmHour() {
         Hour newAlarmHour = this.classHour;
+
         for (Rituel r : rituels) {
-            newAlarmHour.setHours(newAlarmHour.getHours() - (r.getLasting() % 60));
-            newAlarmHour.setMinutes(newAlarmHour.getMinutes() - (r.getLasting() - 60));
+            newAlarmHour.setHours(newAlarmHour.getHours() - r.getLasting().getHours());
+            newAlarmHour.setMinutes(newAlarmHour.getMinutes()-r.getLasting().getMinutes());
+            if (newAlarmHour.getMinutes()<0) {
+                newAlarmHour.setMinutes(newAlarmHour.getMinutes() + 60);
+                newAlarmHour.setHours(newAlarmHour.getHours()-1);
+            }
         }
         return newAlarmHour;
     }

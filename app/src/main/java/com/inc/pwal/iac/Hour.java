@@ -29,8 +29,8 @@ public class Hour {
         this.hours = hours;
         if (minutes < 60) this.minutes = minutes;
         else {
-            this.hours+=minutes%60;
-            this.minutes+=(minutes-60*minutes%60);
+            this.hours += minutes / 60;
+            this.minutes = (minutes - 60 * this.hours);
         }
     }
 }
