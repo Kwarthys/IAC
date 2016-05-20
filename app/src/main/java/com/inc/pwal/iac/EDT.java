@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,7 +27,7 @@ public class EDT
     static private long MILLISECOND_2WEEKS = 1209600000L;
 
     @SuppressWarnings("deprecation")
-    public ArrayList<SchoolClass> makeEDT(String filename) throws IOException
+    public String makeEDT(String filename) throws IOException
     {
         Scanner sc = new Scanner(new File(filename));
 
@@ -123,7 +124,7 @@ public class EDT
         }
 
         processEDT();
-        return classSoon;
+        return saveEDT();
     }
 
     @SuppressWarnings("deprecation")
@@ -162,5 +163,162 @@ public class EDT
                 classSoon.remove(i--); //si on le supprime il faut faire reculer le curseur d'un cran puisque la taille du ArrayList vient de changer
             }
         }
+    }
+
+
+    private ArrayList<SchoolClass> readEDT()
+    {
+        //return "START MATIERE " + mat + " PROF " + prof + " SALLE " + salle + " DATE " + date.getDate() + " " + date.getMonth() + " " + date.getYear() + " END ";
+        ArrayList<SchoolClass> read = new ArrayList<SchoolClass>();
+        //System.out.println("Je suis la");
+        int size = 0;
+        Scanner sc;
+        try {
+            sc = new Scanner(new File("edtsaved.txt"));
+
+            String str = sc.next();
+            //System.out.println("pwal :" + str);
+            boolean passage = false;
+            while(!str.contains("FILEEND"))
+            {
+                passage = false;
+                if(str.contains(":START:"))
+                {
+                    //System.out.println("START");
+                    read.add(new SchoolClass());
+                    passage = true;
+                    str = sc.next();
+                }
+
+                if(str.contains("MATIERE:"))
+                {
+                    //System.out.println("Matiere");
+                    passage = true;
+                    String subject = "";
+                    str = sc.next();
+                    while(!str.contains("PROF:"))
+                    {
+
+                        subject = subject + str + " ";
+                        str = sc.next();
+                    }
+                    read.get(size).setSubject(subject);
+                }
+
+                if(str.contains("PROF:"))
+                {
+                    //System.out.println("PROF");
+                    passage = true;
+                    String prof = "";
+                    str = sc.next();
+                    while(!str.contains("SALLE:"))
+                    {
+
+                        prof = prof + str + " ";
+                        str = sc.next();
+                    }
+                    read.get(size).setTeacher(prof);
+                }
+
+
+                if(str.contains("SALLE:"))
+                {
+                    //System.out.println("Salle");
+                    passage = true;
+                    String salle = "";
+                    str = sc.next();
+                    while(!str.contains("DATE:"))
+                    {
+
+                        salle = salle + str  + " ";
+                        str = sc.next();
+                    }
+                    read.get(size).setRoom(salle);
+                }
+
+                if(str.contains("DATE:"))
+                {
+                    //System.out.println("DATE");
+                    passage = true;
+                    int day,month,year,hours,mins;
+                    day = sc.nextInt();
+                    month = sc.nextInt();
+                    year = sc.nextInt();
+                    hours = sc.nextInt();
+                    mins = sc.nextInt();
+                    read.get(size).setDate(new Date(year-1900, month, day,hours,mins,0));
+                    str = sc.next();
+                }
+
+                if(str.contains(":END:"))
+                {
+                    //System.out.println("END");
+                    passage = true;
+                    size++;
+                    str = sc.next();
+                }
+
+                if(!passage)
+                {
+                    //System.out.println("rien");
+                    str = sc.next();
+                }
+
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.out.println("Un jour de mai");
+        }
+        //System.out.println("\n");
+        return read;
+    }
+
+    private String saveEDT()
+    {
+        ArrayList<SchoolClass> read = new ArrayList<SchoolClass>();
+        read = readEDT();
+
+        String laModif ="";
+
+        for(int j = 0; j<classSoon.size();j++)
+        {
+            for(int i = 0; i<read.size();i++)
+            {
+                SchoolClass r = read.get(i);
+                SchoolClass s = classSoon.get(j);
+
+                if(r.getDate().getDate() == s.getDate().getDate())
+                {
+                    if(r.getDate().getHours() != s.getDate().getHours())
+                    {
+                        laModif = laModif + "Modification le " + r.getDate().getDate() + "\n";
+                    }
+                }
+            }
+        }
+
+        if(laModif.length() == 0)
+            return null;
+
+        File f = new File("edtsaved.txt");
+        try
+        {
+            FileWriter w = new FileWriter(f);
+            for(SchoolClass c : classSoon)
+            {
+                w.write(c.toString());
+            }
+
+            w.write("FILEEND");
+            w.close();
+
+        }catch (IOException e)
+        {
+            System.out.println ("Erreur lors de l'ecriture : " + e.getMessage());
+        }
+
+        System.out.println("\nSaved\n");
+        return laModif;
     }
 }

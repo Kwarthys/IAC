@@ -77,4 +77,9 @@ public class SchoolClass {
 
     public boolean isMarked(){return mark;}
 
+    public String toString()
+    {
+        return ":START: MATIERE: " + subject + " PROF: " + teacher + " SALLE: " + room + " DATE: " + date.getDate() + " " + date.getMonth() + " " + (date.getYear()+1900) + " " + date.getHours() + " " + date.getMinutes() + " :END: ";
+    }
+
 }
