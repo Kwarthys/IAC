@@ -273,12 +273,22 @@ public class EDT
 
         String laModif ="";
 
+        long maxS = 0;
+        long maxR = 0;
+
         for(int j = 0; j<classSoon.size();j++)
         {
+            SchoolClass s = classSoon.get(j);
+
+            if(maxS < s.getDate().getTime())
+                maxS = s.getDate().getTime();
+
             for(int i = 0; i<read.size();i++)
             {
                 SchoolClass r = read.get(i);
-                SchoolClass s = classSoon.get(j);
+
+                if(maxR < r.getDate().getTime())
+                    maxR = r.getDate().getTime();
 
                 if(r.getDate().getDate() == s.getDate().getDate())
                 {
@@ -290,7 +300,7 @@ public class EDT
             }
         }
 
-        if(laModif.length() == 0)
+        if(maxS == maxR)
             return null;
 
         File f = new File("edtsaved.txt");
