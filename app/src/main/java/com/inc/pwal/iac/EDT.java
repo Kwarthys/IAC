@@ -1,17 +1,10 @@
 package com.inc.pwal.iac;
 
-import android.util.Log;
-import android.util.Property;
-
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -21,10 +14,10 @@ import java.util.Scanner;
 public class EDT
 {
 
-    private ArrayList<SchoolClass> cours = new ArrayList<SchoolClass>();
-    public ArrayList<SchoolClass> classSoon = new ArrayList<SchoolClass>();
+    private ArrayList<SchoolClass> cours = new ArrayList<>();
+    public ArrayList<SchoolClass> classSoon = new ArrayList<>();
 
-    static private long MILLISECOND_2WEEKS = 1209600000L;
+    public ArrayList<SchoolClass> getSchedule(){return classSoon;}
 
     @SuppressWarnings("deprecation")
     public String makeEDT(String filename) throws IOException
@@ -36,15 +29,15 @@ public class EDT
         while(sc.hasNext())
         {
             String str = sc.next();
-            String summary ="";
-            String prof="";
-            String dtstart="";
-            String location="";
+            String summary;
+            String prof;
+            String dtstart;
+            String location;
 
             if(str.contains("SUMMARY"))
             {
                 //System.out.println("PWAL" + str);
-                summary = new String(str);
+                summary = str;
                 String[] strs = summary.split(":");
                 summary = strs[1];
                 str = sc.next();
@@ -61,8 +54,6 @@ public class EDT
             if(str.contains("Professeur"))
             {
                 prof = str;
-
-                prof = new String(str);
                 String[] strs = prof.split(":");
 	    		   /*for(String s : strs)
 	    			   System.out.println(s);
@@ -104,7 +95,6 @@ public class EDT
             if(str.contains("LOCATION"))
             {
                 location = str;
-                location = new String(str);
                 String[] strs = location.split(":");
                 location = strs[1];
                 leCour.setRoom(location);
@@ -132,6 +122,9 @@ public class EDT
     {
         //MS1970 date - MS1970 today = MStoday->date
         //Nettoyage des cours hors des deux semaines suivantes
+
+        long MILLISECOND_2WEEKS = 1209600000L;
+
         Date today = new Date();
         for(int i = 0; i < cours.size(); i++)
         {
@@ -165,11 +158,11 @@ public class EDT
         }
     }
 
-
+    @SuppressWarnings("deprecation")
     private ArrayList<SchoolClass> readEDT()
     {
         //return "START MATIERE " + mat + " PROF " + prof + " SALLE " + salle + " DATE " + date.getDate() + " " + date.getMonth() + " " + date.getYear() + " END ";
-        ArrayList<SchoolClass> read = new ArrayList<SchoolClass>();
+        ArrayList<SchoolClass> read = new ArrayList<>();
         //System.out.println("Je suis la");
         int size = 0;
         Scanner sc;
@@ -178,7 +171,7 @@ public class EDT
 
             String str = sc.next();
             //System.out.println("pwal :" + str);
-            boolean passage = false;
+            boolean passage;
             while(!str.contains("FILEEND"))
             {
                 passage = false;
@@ -266,7 +259,6 @@ public class EDT
 
             }
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             System.out.println("Un jour de mai");
         }
@@ -274,10 +266,10 @@ public class EDT
         return read;
     }
 
+    @SuppressWarnings("deprecation")
     private String saveEDT()
     {
-        ArrayList<SchoolClass> read = new ArrayList<SchoolClass>();
-        read = readEDT();
+        ArrayList<SchoolClass> read = readEDT();
 
         String laModif ="";
 
