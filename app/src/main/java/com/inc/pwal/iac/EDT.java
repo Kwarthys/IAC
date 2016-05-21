@@ -300,7 +300,7 @@ public class EDT
             }
         }
 
-        if(maxS == maxR)
+        if(maxS == maxR && laModif.length()<1)
             return null;
 
         File f = new File("edtsaved.txt");
