@@ -1,7 +1,6 @@
 package com.inc.pwal.iac;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Kwarthys on 03/05/2016.
@@ -9,7 +8,7 @@ import java.util.Date;
 public class Day {
     //définit les jours
 
-    private ArrayList<Rituel> rituels = new ArrayList<Rituel>();     //liste des rituels
+    private ArrayList<Rituel> rituels = new ArrayList<>();     //liste des rituels
     private int id;                                             //id des jours
     private String name;                                        //nom des jours
     private Hour alarmHour;                                     //heure de réveil
@@ -21,7 +20,7 @@ public class Day {
         this.id = id;
         this.name = name;
         this.classHour = classHour;
-        this.alarmHour = CalculateAlarmHour();
+        this.alarmHour = calculateAlarmHour();
     }
 
     public ArrayList<Rituel> getRituels() {
@@ -64,22 +63,20 @@ public class Day {
         this.name = name;
     }
 
-    public void AddRituel(Rituel r) {
+    public void addRituel(Rituel r) {
         rituels.add(r);
     }
 
-    public void showDay() {
-    }                                    //TODO
-
-    public Hour CalculateAlarmHour() {
+    public Hour calculateAlarmHour() {
         Hour newAlarmHour = this.classHour;
-
-        for (Rituel r : rituels) {
-            newAlarmHour.setHours(newAlarmHour.getHours() - r.getLasting().getHours());
-            newAlarmHour.setMinutes(newAlarmHour.getMinutes()-r.getLasting().getMinutes());
-            if (newAlarmHour.getMinutes()<0) {
-                newAlarmHour.setMinutes(newAlarmHour.getMinutes() + 60);
-                newAlarmHour.setHours(newAlarmHour.getHours()-1);
+        if (rituels!=null) {
+            for (Rituel r : rituels) {
+                newAlarmHour.setHours(newAlarmHour.getHours() - r.getLasting().getHours());
+                newAlarmHour.setMinutes(newAlarmHour.getMinutes() - r.getLasting().getMinutes());
+                if (newAlarmHour.getMinutes() < 0) {
+                    newAlarmHour.setMinutes(newAlarmHour.getMinutes() + 60);
+                    newAlarmHour.setHours(newAlarmHour.getHours() - 1);
+                }
             }
         }
         return newAlarmHour;

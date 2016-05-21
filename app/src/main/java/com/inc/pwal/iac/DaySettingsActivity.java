@@ -1,13 +1,34 @@
 package com.inc.pwal.iac;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 public class DaySettingsActivity extends AppCompatActivity {
+
+    private final String DAY_CLICKED = null;
+
+    private Day dayPassed;
+    private static String dayClicked;
+
+    public static String getDayClicked() {
+        return dayClicked;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_day_settings);
+
+        Intent intent = getIntent();
+
+        Toast toast = new Toast(DaySettingsActivity.this);
+        if (intent != null) {
+            dayClicked=intent.getStringExtra(DAY_CLICKED);
+            toast.makeText(DaySettingsActivity.this, dayClicked, Toast.LENGTH_SHORT).show();
+            dayPassed = MainActivity.getDayPressed();
+        }
     }
 }
