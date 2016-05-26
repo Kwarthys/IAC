@@ -17,11 +17,15 @@ public class EDT
     private ArrayList<SchoolClass> cours = new ArrayList<>();
     public ArrayList<SchoolClass> classSoon = new ArrayList<>();
 
+    public String url = "http://edt.enib.fr/ics.php?username=t3alves&pass='dDNhbHZlcw=='";
+
     public ArrayList<SchoolClass> getSchedule(){return classSoon;}
 
     @SuppressWarnings("deprecation")
     public String makeEDT(String filename) throws IOException
     {
+        Download.getFile(url);
+
         Scanner sc = new Scanner(new File(filename));
 
         SchoolClass leCour = new SchoolClass();
