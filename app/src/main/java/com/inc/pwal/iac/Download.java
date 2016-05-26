@@ -8,11 +8,11 @@ import java.net.URLConnection;
 
 public class Download
 {
-    public static void getFile(String host)
+    public static String getFile(String host)
     {
         InputStream input = null;
         FileOutputStream writeFile = null;
-
+        String fileName ="";
         try
         {
             URL url = new URL(host);
@@ -22,11 +22,11 @@ public class Download
             if (fileLength == -1)
             {
                 System.out.println("Invalid URL or file.");
-                return;
+                return fileName;
             }
 
             input = connection.getInputStream();
-            String fileName = url.getFile().substring(url.getFile().lastIndexOf('/') + 1);
+            fileName = url.getFile().substring(url.getFile().lastIndexOf('/') + 1);
             writeFile = new FileOutputStream(fileName);
             byte[] buffer = new byte[1024];
             int read;
@@ -52,6 +52,8 @@ public class Download
                 e.printStackTrace();
             }
         }
+
+        return fileName;
     }
 /*
     public static void main(String[] args)

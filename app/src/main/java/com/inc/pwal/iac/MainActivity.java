@@ -91,6 +91,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
 
         this.setDefaultDay();
+        EDT edt = new EDT();
+        try {
+            String lastring = edt.makeEDT();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
         super.onCreate(savedInstanceState);
 
