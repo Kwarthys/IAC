@@ -91,12 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
 
         this.setDefaultDay();
-        EDT edt = new EDT();
-        try {
-            String lastring = edt.makeEDT();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+
 
         super.onCreate(savedInstanceState);
 
@@ -104,6 +99,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(view);
 
         this.CreateInterface();
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                EDT edt = new EDT();
+                try {
+                    String lastring = edt.makeEDT();
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+
+
     }
 
     @Override

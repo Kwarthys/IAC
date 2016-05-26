@@ -10,14 +10,19 @@ public class Download
 {
     public static String getFile(String host)
     {
+        System.out.println("Download Starting at : @" + host + "@");
         InputStream input = null;
         FileOutputStream writeFile = null;
         String fileName ="";
         try
         {
+            System.out.println("Starting connection");
             URL url = new URL(host);
             URLConnection connection = url.openConnection();
+            System.out.println("Connection Complete");
+
             int fileLength = connection.getContentLength();
+            System.out.println("FileLength = " + fileLength);
 
             if (fileLength == -1)
             {
@@ -25,8 +30,13 @@ public class Download
                 return fileName;
             }
 
+            System.out.println("Valid File");
+
             input = connection.getInputStream();
             fileName = url.getFile().substring(url.getFile().lastIndexOf('/') + 1);
+
+            System.out.println("FileName : " + fileName);
+
             writeFile = new FileOutputStream(fileName);
             byte[] buffer = new byte[1024];
             int read;
@@ -34,6 +44,7 @@ public class Download
             while ((read = input.read(buffer)) > 0)
                 writeFile.write(buffer, 0, read);
             writeFile.flush();
+            System.out.println("Download Done");
         }
         catch (IOException e)
         {
@@ -44,11 +55,14 @@ public class Download
         {
             try
             {
-                writeFile.close();
-                input.close();
+                if(writeFile!=null)
+                     writeFile.close();
+                if(input!=null)
+                      input.close();
             }
             catch (IOException e)
             {
+                System.out.println("Error 2");
                 e.printStackTrace();
             }
         }
