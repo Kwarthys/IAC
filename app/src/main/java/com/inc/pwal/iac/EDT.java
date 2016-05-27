@@ -21,11 +21,12 @@ public class EDT
     @SuppressWarnings("deprecation")
     public String makeEDT() throws IOException
     {
-        String url = "http://edt.enib.fr/ics.php?username=t3alves&pass='dDNhbHZlcw=='";
+        //String url = "http://edt.enib.fr/ics.php?username=t3alves&pass='dDNhbHZlcw=='";
 
-        String filename = Download.getFile(url);
+        //String filename = Download.getFile(url);
 
-        Scanner sc = new Scanner(new File(filename));
+        System.out.println("downLoad bypass");
+        Scanner sc = new Scanner(new File("sdcard/Download/edt.ics"));
 
         SchoolClass leCour = new SchoolClass();
 
