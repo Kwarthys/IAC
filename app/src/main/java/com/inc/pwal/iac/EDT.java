@@ -20,6 +20,8 @@ import java.util.Scanner;
 public class EDT
 {
 
+    public static String edtPath = "sdcard/IAC/edt/";
+
     private ArrayList<SchoolClass> cours = new ArrayList<>();
     public ArrayList<SchoolClass> classSoon = new ArrayList<>();
     public ArrayList<SchoolClass> getSchedule(){return classSoon;}
@@ -33,10 +35,10 @@ public class EDT
 
         System.out.println("MovingFile");
 
-        moveFile("sdcard/Download/","edt.ics", "./");
+        moveFile("sdcard/Download/","edt.ics", edtPath);
 
         System.out.println("downLoad bypass");
-        Scanner sc = new Scanner(new File("sdcard/Download/edt.ics"));
+        Scanner sc = new Scanner(new File(edtPath + "edt.ics"));
 
         SchoolClass leCour = new SchoolClass();
 
@@ -182,7 +184,7 @@ public class EDT
         int size = 0;
         Scanner sc;
         try {
-            sc = new Scanner(new File("edtsaved.txt"));
+            sc = new Scanner(new File(edtPath + "edtsaved.txt"));
 
             String str = sc.next();
             //System.out.println("pwal :" + str);
@@ -318,7 +320,7 @@ public class EDT
         if(maxS == maxR && laModif.length()<1)
             return null;
 
-        File f = new File("edtsaved.txt");
+        File f = new File(edtPath + "edtsaved.txt");
         try
         {
             FileWriter w = new FileWriter(f);
