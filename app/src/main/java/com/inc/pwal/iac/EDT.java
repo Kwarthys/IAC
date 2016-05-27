@@ -77,9 +77,10 @@ public class EDT
             if(str.contains("DTSTART"))
             {
                 dtstart = str;
-                //System.out.println(dtstart);
-                dtstart = dtstart.replace("DTSTART:", "");
-                //System.out.println(dtstart);
+                System.out.println(dtstart);
+                String[] strs = dtstart.split(":");
+                dtstart = strs[strs.length-1];
+                System.out.println(dtstart);
                 String[] s = dtstart.split("T");
                 String laDate = s[0];
                 String lHeure = s[1];
