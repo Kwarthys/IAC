@@ -20,14 +20,18 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private static Day monday;
-    private static Day tuesday;
-    private static Day wednesday;
-    private static Day thursday;
-    private static Day friday;
-    private static Day saturday;
-    private static Day sunday;
+    public static Day monday;
+    public static Day tuesday;
+    public static Day wednesday;
+    public static Day thursday;
+    public static Day friday;
+    public static Day saturday;
+    public static Day sunday;
     private final String DAY_CLICKED = null;
+    private static ArrayList<Day> week1 = new ArrayList<>();
+    public static ArrayList<Rituel> listRituels = new ArrayList<>();
+
+
 
     private void CreateInterface(){
         Button buttonMonday = (Button) findViewById(R.id.buttonMonday);
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             buttonWednesday.setText(wednesday.getName() + " " + wednesday.getAlarmHour().getHours() + ":" + wednesday.getAlarmHour().getMinutes());
             buttonWednesday.setOnClickListener(MainActivity.this);
         }
+
         Button buttonThursday = (Button) findViewById(R.id.buttonThursday);
         if (buttonThursday != null) {
             buttonThursday.setText(thursday.getName() + " " + thursday.getAlarmHour().getHours() + ":" + thursday.getAlarmHour().getMinutes());
@@ -76,22 +81,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setDefaultDay (){
-        monday = new Day(null, 1, "Lundi", new Hour(12, 0));
-        tuesday = new Day(null, 1, "Mardi", new Hour(12, 0));
-        wednesday = new Day(null, 1, "Mercredi", new Hour(12, 0));
-        thursday = new Day(null, 1, "Jeudi", new Hour(12, 0));
-        friday = new Day(null, 1, "Vendredi", new Hour(12, 0));
-        saturday = new Day(null, 1, "Samedi", new Hour(12, 0));
-        sunday = new Day(null, 1, "Dimanche", new Hour(12, 0));
+        monday = new Day(1, "Lundi", new Hour(12, 0),(Button)findViewById(R.id.buttonMonday));
+        tuesday = new Day(1, "Mardi", new Hour(12, 0),(Button)findViewById(R.id.buttonTuesday));
+        wednesday = new Day(1, "Mercredi", new Hour(12, 0),(Button)findViewById(R.id.buttonWednesday));
+        thursday = new Day(1, "Jeudi", new Hour(12, 0),(Button)findViewById(R.id.buttonThursday));
+        friday = new Day(1, "Vendredi", new Hour(12, 0),(Button)findViewById(R.id.buttonFriday));
+        saturday = new Day(1, "Samedi", new Hour(12, 0),(Button)findViewById(R.id.buttonSaturday));
+        sunday = new Day(1, "Dimanche", new Hour(12, 0),(Button)findViewById(R.id.buttonSunday));
 
+        week1.add(monday);
+        week1.add(tuesday);
+        week1.add(wednesday);
+        week1.add(thursday);
+        week1.add(friday);
+        week1.add(saturday);
+        week1.add(sunday);
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
 
+        // Rituel douche = new Rituel(1,"douche",15,0,"pwal");
         this.setDefaultDay();
-
 
         super.onCreate(savedInstanceState);
 
@@ -105,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 EDT edt = new EDT();
                 try {
-                    String lastring = edt.makeEDT();
+//                    String lastring = edt.makeEDT();
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -114,6 +127,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         t.start();
 
 
+    }
+
+    public static void updateInterface() {
+        for (Day d : week1){
+            d.calculateAlarmHour();
+            d.getButton().setText(d.getName() + " " + d.getAlarmHour().getHours() + ":" + d.getAlarmHour().getMinutes());
+        }
     }
 
     @Override

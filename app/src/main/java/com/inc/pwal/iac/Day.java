@@ -1,5 +1,7 @@
 package com.inc.pwal.iac;
 
+import android.widget.Button;
+
 import java.util.ArrayList;
 
 /**
@@ -14,13 +16,24 @@ public class Day {
     private Hour alarmHour;                                     //heure de réveil
     private Hour classHour;                                     //heure de début des cours
 
+    public Button getButton() {
+        return button;
+    }
 
-    public Day(ArrayList<Rituel> rituels, int id, String name, Hour classHour) {
-        this.rituels = rituels;
+    public void setButton(Button button) {
+        this.button = button;
+    }
+
+    private Button button;
+
+
+    public Day(int id, String name, Hour classHour,Button button) {
+        this.rituels = new ArrayList<>();
         this.id = id;
         this.name = name;
         this.classHour = classHour;
         this.alarmHour = calculateAlarmHour();
+        this.button = button;
     }
 
     public ArrayList<Rituel> getRituels() {
