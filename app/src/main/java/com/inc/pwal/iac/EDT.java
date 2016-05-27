@@ -1,9 +1,15 @@
 package com.inc.pwal.iac;
 
+import android.util.Log;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
@@ -24,6 +30,10 @@ public class EDT
         //String url = "http://edt.enib.fr/ics.php?username=t3alves&pass='dDNhbHZlcw=='";
 
         //String filename = Download.getFile(url);
+
+        System.out.println("MovingFile");
+
+        moveFile("sdcard/Download/","edt.ics", "./");
 
         System.out.println("downLoad bypass");
         Scanner sc = new Scanner(new File("sdcard/Download/edt.ics"));
@@ -327,5 +337,49 @@ public class EDT
 
         System.out.println("\nSaved\n");
         return laModif;
+    }
+
+    private void moveFile(String inputPath, String inputFile, String outputPath) {
+
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+
+            //create output directory if it doesn't exist
+            File dir = new File (outputPath);
+            if (!dir.exists())
+            {
+                return;
+                //dir.mkdirs();
+            }
+
+
+            in = new FileInputStream(inputPath + inputFile);
+            out = new FileOutputStream(outputPath + inputFile);
+
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            in.close();
+
+            // write the output file
+            out.flush();
+            out.close();
+
+            // delete the original file
+            //new File(inputPath + inputFile).delete();
+
+
+        }
+
+        catch (FileNotFoundException fnfe1) {
+            Log.e("tag", fnfe1.getMessage());
+        }
+        catch (Exception e) {
+            Log.e("tag", e.getMessage());
+        }
+
     }
 }
