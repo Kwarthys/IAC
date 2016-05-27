@@ -349,8 +349,7 @@ public class EDT
             File dir = new File (outputPath);
             if (!dir.exists())
             {
-                return;
-                //dir.mkdirs();
+                dir.mkdirs();
             }
 
 
