@@ -1,24 +1,28 @@
 package com.inc.pwal.iac;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
-import android.view.View;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private String TAG = "IAC";
 
     public static Day monday;
     public static Day tuesday;
@@ -30,6 +34,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final String DAY_CLICKED = null;
     private static ArrayList<Day> week1 = new ArrayList<>();
     public static ArrayList<Rituel> listRituels = new ArrayList<>();
+
+    private EDT edt = new EDT();
+    //-----------------------------------------------------------------------BLUETOOTH--------------
+    private String toLaunch ="";
+    private BluetoothAdapter mBluetoothAdapter;
+    private ConnectionThread mBluetoothConnection = null;
+    private String data;
+    private static final int REQUEST_ENABLE_BT = 0;
+    private static final int SELECT_SERVER = 1;
+    public static final int DATA_RECEIVED = 3;
+    public static final int SOCKET_CONNECTED = 4;
+    public static final UUID APP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    public Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case SOCKET_CONNECTED: {
+                    mBluetoothConnection = (ConnectionThread) msg.obj;
+                    System.out.println(toLaunch);
+                    mBluetoothConnection.write(toLaunch.getBytes());
+                    break;
+                }
+                case DATA_RECEIVED: {
+                    data = (String) msg.obj;
+                    tost(data);
+                }
+                default:
+                    break;
+            }
+        }
+    };
+
+    protected Runnable envoiBT = new Runnable() {
+        @Override
+        public void run() {
+            mBluetoothConnection.write(toLaunch.getBytes());
+            Log.d(TAG, "Envoi effectué" + toLaunch);
+        }
+    };
+    //-------------------------------------------------------------------FIN-BLUETOOTH--------------
 
 
 
@@ -104,6 +148,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
 
         // Rituel douche = new Rituel(1,"douche",15,0,"pwal");
+
+        bluetooth();
+
         this.setDefaultDay();
 
         super.onCreate(savedInstanceState);
@@ -113,20 +160,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         this.CreateInterface();
 
+        //launchEDT();//Download bypass'd
+
+
+    }
+
+    private void launchEDT()
+    {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                EDT edt = new EDT();
+                edt = new EDT();
                 try {
-//                    String lastring = edt.makeEDT();
+                    String lastring = edt.makeEDT();
+                    System.out.println("Fin du Process EDT avec Signal : " + lastring);
                 }catch(Exception e){
                     e.printStackTrace();
                 }
             }
         });
         t.start();
-
-
     }
 
     public static void updateInterface() {
@@ -161,7 +214,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(MainActivity.this, DaySettingsActivity.class);
-        if (v == findViewById(R.id.buttonMonday)) intent.putExtra(DAY_CLICKED, monday.getName());
+        if (v == findViewById(R.id.buttonMonday)) {
+
+            toLaunch = "LUNDI";
+            envoiBT.run();
+            intent.putExtra(DAY_CLICKED, monday.getName());
+        }
         else if (v == findViewById(R.id.buttonTuesday)) intent.putExtra(DAY_CLICKED, tuesday.getName());
         else if (v == findViewById(R.id.buttonWednesday)) intent.putExtra(DAY_CLICKED, wednesday.getName());
         else if (v == findViewById(R.id.buttonThursday)) intent.putExtra(DAY_CLICKED, thursday.getName());
@@ -197,6 +255,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
         return d;
+    }
+
+    public void tost(String toToast)
+    {
+        Toast.makeText(MainActivity.this, toToast, Toast.LENGTH_SHORT).show();
+    }
+
+    //-------------------------------BLUETOOTH------------------------------------------------------
+
+    private void bluetooth()
+    {
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            Log.i(TAG, "Bluetooth not supported");
+            finish();
+        }
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBluetoothIntent, REQUEST_ENABLE_BT);
+        }
+
+        //connectToBluetoothServer(device.getAddress());
+        // new ConnectThread(id, mHandler).start();
+        selectServer();
+    }
+
+    private void selectServer() {
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        ArrayList<String> pairedDeviceStrings = new ArrayList<String>();
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+                pairedDeviceStrings.add(device.getName() + "\n"
+                        + device.getAddress());
+            }
+        }
+        Intent showDevicesIntent = new Intent(this, ShowDevices.class);
+        showDevicesIntent.putStringArrayListExtra("devices", pairedDeviceStrings);
+        startActivityForResult(showDevicesIntent, SELECT_SERVER);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SELECT_SERVER && resultCode == RESULT_OK) {
+            BluetoothDevice device = data.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+            connectToBluetoothServer(device.getAddress());
+        }
+    }
+    private void connectToBluetoothServer(String id) {
+        tost("Connecting to Server...");
+        toLaunch = "PERDU";
+        System.out.println("Starting Handler");
+        new ConnectThread(id, mHandler).start();
     }
 
 }
