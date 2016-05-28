@@ -37,7 +37,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private EDT edt = new EDT();
     //-----------------------------------------------------------------------BLUETOOTH--------------
-    private String toLaunch ="";
+    private boolean busy = false;
+    private byte[] toLaunch;
+
     private BluetoothAdapter mBluetoothAdapter;
     private ConnectionThread mBluetoothConnection = null;
     private String data;
@@ -52,8 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (msg.what) {
                 case SOCKET_CONNECTED: {
                     mBluetoothConnection = (ConnectionThread) msg.obj;
-                    System.out.println(toLaunch);
-                    mBluetoothConnection.write(toLaunch.getBytes());
+                    mBluetoothConnection.write(toLaunch);
                     break;
                 }
                 case DATA_RECEIVED: {
@@ -69,8 +70,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected Runnable envoiBT = new Runnable() {
         @Override
         public void run() {
-            mBluetoothConnection.write(toLaunch.getBytes());
-            Log.d(TAG, "Envoi effectué" + toLaunch);
+            busy = true;
+            mBluetoothConnection.write(toLaunch);
+            Log.d(TAG, "Envoi effectué : " + toLaunch );
+            busy=false;
         }
     };
     //-------------------------------------------------------------------FIN-BLUETOOTH--------------
@@ -215,13 +218,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         Intent intent = new Intent(MainActivity.this, DaySettingsActivity.class);
         if (v == findViewById(R.id.buttonMonday)) {
-
-            toLaunch = "LUNDI";
-            envoiBT.run();
+            sendMsg("Champignons au fromage de porc");
             intent.putExtra(DAY_CLICKED, monday.getName());
         }
-        else if (v == findViewById(R.id.buttonTuesday)) intent.putExtra(DAY_CLICKED, tuesday.getName());
-        else if (v == findViewById(R.id.buttonWednesday)) intent.putExtra(DAY_CLICKED, wednesday.getName());
+        else if (v == findViewById(R.id.buttonTuesday)){
+            sendMsg("APWAL LES POMMES");
+            intent.putExtra(DAY_CLICKED, tuesday.getName());
+        }
+        else if (v == findViewById(R.id.buttonWednesday)){
+            sendMsg("5800 5700 9640 654123 158;");
+            intent.putExtra(DAY_CLICKED, wednesday.getName());
+        }
         else if (v == findViewById(R.id.buttonThursday)) intent.putExtra(DAY_CLICKED, thursday.getName());
         else if (v == findViewById(R.id.buttonFriday)) intent.putExtra(DAY_CLICKED, friday.getName());
         else if (v == findViewById(R.id.buttonSaturday)) intent.putExtra(DAY_CLICKED, saturday.getName());
@@ -284,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void selectServer() {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        ArrayList<String> pairedDeviceStrings = new ArrayList<String>();
+        ArrayList<String> pairedDeviceStrings = new ArrayList<>();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
                 pairedDeviceStrings.add(device.getName() + "\n"
@@ -304,9 +311,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     private void connectToBluetoothServer(String id) {
         tost("Connecting to Server...");
-        toLaunch = "PERDU";
+        toLaunch = "Coucou".getBytes();
         System.out.println("Starting Handler");
         new ConnectThread(id, mHandler).start();
+    }
+
+    protected void sendMsg(String msg)
+    {
+        byte[] space = "        ".getBytes();
+        byte[] tmp = msg.getBytes();
+        int c = 0;
+        while(tmp.length > 8*(c+1))
+        {
+            toLaunch = new byte[8];
+            System.out.println("msg : " + msg.length() + " toLaunch : " + toLaunch.length);
+            for (int i = 0; i < 8; i++) {
+                toLaunch[i] = tmp[c * 8 + i];
+            }
+            c++;
+            while (busy) ;
+            new Runnable() {
+                @Override
+                public void run() {
+                    busy = true;
+                    mBluetoothConnection.write(toLaunch);
+                    Log.d(TAG, "Envoi effectué" + toLaunch);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    busy=false;
+                }
+            }.run();
+        }
+        int lastToLaunch = msg.length() - (8*c);
+        toLaunch = new byte[8];
+        for(int i = 0; i <lastToLaunch; i++)
+            toLaunch[i] = tmp[c*8 + i];
+        for(int i = lastToLaunch; i<8;i++)
+            toLaunch[i] = space[i];
+
+        while(busy);
+        new Runnable() {
+            @Override
+            public void run() {
+                busy = true;
+                mBluetoothConnection.write(toLaunch);
+                Log.d(TAG, "Envoi effectué" + toLaunch);
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                busy=false;
+            }
+        }.run();
+
     }
 
 }
