@@ -13,11 +13,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
+
+import static com.inc.pwal.iac.R.id.buttonMonday;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -32,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static Day saturday;
     public static Day sunday;
     private final String DAY_CLICKED = null;
-    private static ArrayList<Day> week1 = new ArrayList<>();
+    public static ArrayList<Day> week1 = new ArrayList<>();
     public static ArrayList<Rituel> listRituels = new ArrayList<>();
 
     private EDT edt = new EDT();
@@ -80,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-    private void CreateInterface(){
+    private void createInterface(){
         Button buttonMonday = (Button) findViewById(R.id.buttonMonday);
         if (buttonMonday != null) {
             buttonMonday.setText(monday.getName() + " " + monday.getAlarmHour().getHours() + ":" + monday.getAlarmHour().getMinutes());
@@ -128,21 +131,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setDefaultDay (){
-        monday = new Day(1, "Lundi", new Hour(12, 0),(Button)findViewById(R.id.buttonMonday));
+        monday = new Day(1, "Lundi", new Hour(12, 0),(Button)findViewById(buttonMonday));
         tuesday = new Day(1, "Mardi", new Hour(12, 0),(Button)findViewById(R.id.buttonTuesday));
         wednesday = new Day(1, "Mercredi", new Hour(12, 0),(Button)findViewById(R.id.buttonWednesday));
         thursday = new Day(1, "Jeudi", new Hour(12, 0),(Button)findViewById(R.id.buttonThursday));
         friday = new Day(1, "Vendredi", new Hour(12, 0),(Button)findViewById(R.id.buttonFriday));
         saturday = new Day(1, "Samedi", new Hour(12, 0),(Button)findViewById(R.id.buttonSaturday));
         sunday = new Day(1, "Dimanche", new Hour(12, 0),(Button)findViewById(R.id.buttonSunday));
+    }
 
-        week1.add(monday);
-        week1.add(tuesday);
-        week1.add(wednesday);
-        week1.add(thursday);
-        week1.add(friday);
-        week1.add(saturday);
-        week1.add(sunday);
+    private void setDefaultRituels(){
+        Rituel douche = new Rituel(1,"douche",15,0,"default");
+        Rituel trajet = new Rituel(2, "trajet", 25, 0, "default");
+        Rituel manger = new Rituel(3, "manger", 30, 0, "default");
+        Rituel prepAffaires = new Rituel(4, "préparer affaires", 20, 0, "default");
+        Rituel lavageDents = new Rituel(5, "lavage dents", 5, 0, "default");
     }
 
 
@@ -150,22 +153,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState)
     {
 
-        // Rituel douche = new Rituel(1,"douche",15,0,"pwal");
-
-        bluetooth();
+        //bluetooth();
 
         this.setDefaultDay();
+        this.setDefaultRituels();
 
         super.onCreate(savedInstanceState);
 
         int view = R.layout.activity_main;
         setContentView(view);
 
-        this.CreateInterface();
+        this.createInterface();
 
         //launchEDT();//Download bypass'd
 
 
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        updateInterface();
     }
 
     private void launchEDT()
@@ -185,12 +193,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         t.start();
     }
 
-    public static void updateInterface() {
+    protected void updateInterface() {
         for (Day d : week1){
             d.calculateAlarmHour();
-            d.getButton().setText(d.getName() + " " + d.getAlarmHour().getHours() + ":" + d.getAlarmHour().getMinutes());
         }
+
+        Button buttonMonday = (Button) findViewById(R.id.buttonMonday);
+        buttonMonday.setText(monday.getName() + " " + monday.getAlarmHour().getHours() + ":" + monday.getAlarmHour().getMinutes());
+
+        Button buttonTuesday = (Button) findViewById(R.id.buttonTuesday);
+        buttonTuesday.setText(tuesday.getName() + " " + tuesday.getAlarmHour().getHours() + ":" + tuesday.getAlarmHour().getMinutes());
+
+        Button buttonWednesday = (Button) findViewById(R.id.buttonWednesday);
+        buttonWednesday.setText(wednesday.getName() + " " + wednesday.getAlarmHour().getHours() + ":" + wednesday.getAlarmHour().getMinutes());
+
+        Button buttonThursday = (Button) findViewById(R.id.buttonThursday);
+        buttonThursday.setText(thursday.getName() + " " + thursday.getAlarmHour().getHours() + ":" + thursday.getAlarmHour().getMinutes());
+
+        Button buttonFriday = (Button) findViewById(R.id.buttonFriday);
+        buttonFriday.setText(friday.getName() + " " + friday.getAlarmHour().getHours() + ":" + friday.getAlarmHour().getMinutes());
+
+        Button buttonSaturday = (Button) findViewById(R.id.buttonSaturday);
+        buttonSaturday.setText(saturday.getName() + " " + saturday.getAlarmHour().getHours() + ":" + saturday.getAlarmHour().getMinutes());
+
+        Button buttonSunday = (Button) findViewById(R.id.buttonSunday);
+        buttonSunday.setText(sunday.getName() + " " + sunday.getAlarmHour().getHours() + ":" + sunday.getAlarmHour().getMinutes());
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -217,16 +246,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(MainActivity.this, DaySettingsActivity.class);
-        if (v == findViewById(R.id.buttonMonday)) {
-            sendMsg("Champignons au fromage de porc");
+        if (v == findViewById(buttonMonday)) {
+            //sendMsg("Champignons au fromage de porc");
             intent.putExtra(DAY_CLICKED, monday.getName());
         }
         else if (v == findViewById(R.id.buttonTuesday)){
-            sendMsg("APWAL LES POMMES");
+            //sendMsg("APWAL LES POMMES");
             intent.putExtra(DAY_CLICKED, tuesday.getName());
         }
         else if (v == findViewById(R.id.buttonWednesday)){
-            sendMsg("5800 5700 9640 654123 158;");
+            //sendMsg("5800 5700 9640 654123 158;");
             intent.putExtra(DAY_CLICKED, wednesday.getName());
         }
         else if (v == findViewById(R.id.buttonThursday)) intent.putExtra(DAY_CLICKED, thursday.getName());

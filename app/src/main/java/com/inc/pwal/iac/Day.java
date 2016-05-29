@@ -15,24 +15,23 @@ public class Day {
     private String name;                                        //nom des jours
     private Hour alarmHour;                                     //heure de réveil
     private Hour classHour;                                     //heure de début des cours
-
-    public Button getButton() {
-        return button;
-    }
-
-    public void setButton(Button button) {
-        this.button = button;
-    }
-
     private Button button;
-
 
     public Day(int id, String name, Hour classHour,Button button) {
         this.rituels = new ArrayList<>();
         this.id = id;
         this.name = name;
         this.classHour = classHour;
-        this.alarmHour = calculateAlarmHour();
+        this.calculateAlarmHour();
+        this.button = button;
+        MainActivity.week1.add(this);
+    }
+
+    public Button getButton() {
+        return button;
+    }
+
+    public void setButton(Button button) {
         this.button = button;
     }
 
@@ -80,7 +79,7 @@ public class Day {
         rituels.add(r);
     }
 
-    public Hour calculateAlarmHour() {
+    public void calculateAlarmHour() {
         Hour newAlarmHour = this.classHour;
         if (rituels!=null) {
             for (Rituel r : rituels) {
@@ -92,7 +91,6 @@ public class Day {
                 }
             }
         }
-        return newAlarmHour;
+        this.setAlarmHour(newAlarmHour);
     }
-
 }
