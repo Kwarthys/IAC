@@ -7,4 +7,11 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
+
+    <item
+        android:id="@+id/action_Sync"
+        android:orderInCategory="100"
+        android:title="Syncro Bluetooth"
+        app:showAsAction="never" />
 </menu>
