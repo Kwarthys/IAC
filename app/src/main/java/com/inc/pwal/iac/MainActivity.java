@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (id == R.id.action_Sync) {
             tost("Perdu");
-            sendMsg(createBTMsg());
+            //sendMsg(createBTMsg());
             return true;
         }
 
