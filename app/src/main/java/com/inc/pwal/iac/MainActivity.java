@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final String DAY_CLICKED = null;
     public static ArrayList<Day> week1;
     public static ArrayList<Rituel> listRituels;
+    public Intent intent;
 
     private EDT edt = new EDT();
     //-----------------------------------------------------------------------BLUETOOTH--------------
@@ -122,9 +123,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-
     }
 
     private void setDefaultDay (){
@@ -248,12 +246,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
 
+        if (id == R.id.action_CreateRituel){
+            tost("création rituel");
+            //intent = new Intent(MainActivity.this,);
+
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(MainActivity.this, DaySettingsActivity.class);
+        intent = new Intent(MainActivity.this, DaySettingsActivity.class);
         if (v == findViewById(buttonMonday)) {
             //sendMsg("Champignons au fromage de porc");
             intent.putExtra(DAY_CLICKED, monday.getName());
@@ -413,5 +418,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }.run();
 
     }
-
 }

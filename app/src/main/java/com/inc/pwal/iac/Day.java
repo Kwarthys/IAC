@@ -1,7 +1,6 @@
 package com.inc.pwal.iac;
 
 import android.widget.Button;
-
 import java.util.ArrayList;
 
 /**
