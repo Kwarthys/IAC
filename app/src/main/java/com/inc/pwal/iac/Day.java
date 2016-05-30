@@ -76,18 +76,23 @@ public class Day {
     }
 
     public void addRituel(Rituel r) {
-        rituels.add(r);
+        boolean isDifferent = false;
+        for (Rituel rit : rituels) {
+            if (rit == r) isDifferent=true;
+        }
+        if (!isDifferent)rituels.add(r);
     }
 
     public void calculateAlarmHour() {
         Hour newAlarmHour = this.classHour;
         if (rituels!=null) {
             for (Rituel r : rituels) {
-                newAlarmHour.setHours(newAlarmHour.getHours() - r.getLasting().getHours());
-                newAlarmHour.setMinutes(newAlarmHour.getMinutes() - r.getLasting().getMinutes());
+                System.out.println(r.getName());
+                newAlarmHour.setHours(this.classHour.getHours() - r.getLasting().getHours());
+                newAlarmHour.setMinutes(this.classHour.getMinutes() - r.getLasting().getMinutes());
                 if (newAlarmHour.getMinutes() < 0) {
-                    newAlarmHour.setMinutes(newAlarmHour.getMinutes() + 60);
-                    newAlarmHour.setHours(newAlarmHour.getHours() - 1);
+                    newAlarmHour.setMinutes(this.classHour.getMinutes() + 60);
+                    newAlarmHour.setHours(this.classHour.getHours() - 1);
                 }
             }
         }

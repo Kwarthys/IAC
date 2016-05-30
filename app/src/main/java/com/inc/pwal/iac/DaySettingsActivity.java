@@ -18,7 +18,7 @@ public class DaySettingsActivity extends AppCompatActivity{
 
     private Day dayPassed;
     private static String dayClicked;
-    private ArrayList<String> listNameRituels = new ArrayList<>();
+    private ArrayList<String> listNameRituels;
 
     private ListView mListView;
 
@@ -33,11 +33,13 @@ public class DaySettingsActivity extends AppCompatActivity{
         Intent intent = getIntent();
         Toast toast = new Toast(DaySettingsActivity.this);
 
+        listNameRituels = new ArrayList<>();
+
         if (intent != null) {
-            mListView = (ListView) findViewById(R.id.listView);
+            mListView = (ListView) findViewById(R.id.listViewRituels);
             for (Rituel r : MainActivity.listRituels)listNameRituels.add(r.getName());
 
-            ArrayAdapter<String> adap = new ArrayAdapter<String>(DaySettingsActivity.this,
+            ArrayAdapter<String> adap = new ArrayAdapter<>(DaySettingsActivity.this,
                     android.R.layout.simple_list_item_1,listNameRituels);
             mListView.setAdapter(adap);
 
@@ -52,8 +54,6 @@ public class DaySettingsActivity extends AppCompatActivity{
             dayClicked=intent.getStringExtra(DAY_CLICKED);
             toast.makeText(DaySettingsActivity.this, dayClicked, Toast.LENGTH_SHORT).show();
             dayPassed = MainActivity.getDayPressed();
-
-
         }
     }
 }

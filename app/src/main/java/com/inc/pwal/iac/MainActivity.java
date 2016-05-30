@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static Day saturday;
     public static Day sunday;
     private final String DAY_CLICKED = null;
-    public static ArrayList<Day> week1 = new ArrayList<>();
-    public static ArrayList<Rituel> listRituels = new ArrayList<>();
+    public static ArrayList<Day> week1;
+    public static ArrayList<Rituel> listRituels;
 
     private EDT edt = new EDT();
     //-----------------------------------------------------------------------BLUETOOTH--------------
@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setDefaultDay (){
+        week1 = new ArrayList<>();
         monday = new Day(1, "Lundi", new Hour(12, 0),(Button)findViewById(buttonMonday));
         tuesday = new Day(1, "Mardi", new Hour(12, 0),(Button)findViewById(R.id.buttonTuesday));
         wednesday = new Day(1, "Mercredi", new Hour(12, 0),(Button)findViewById(R.id.buttonWednesday));
@@ -132,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setDefaultRituels(){
+        listRituels = new ArrayList<>();
         Rituel douche = new Rituel(1,"douche",15,0,"default");
         Rituel trajet = new Rituel(2, "trajet", 25, 0, "default");
         Rituel manger = new Rituel(3, "manger", 30, 0, "default");
