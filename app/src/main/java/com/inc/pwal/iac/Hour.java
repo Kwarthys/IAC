@@ -25,6 +25,8 @@ public class Hour {
         this.minutes = minutes;
     }
 
+    public Hour(){this.hours=0;this.minutes=0;}
+
     public Hour(int hours, int minutes) {
         this.hours = hours;
         if (minutes < 60) this.minutes = minutes;

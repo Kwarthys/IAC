@@ -17,12 +17,14 @@ public class Day {
     private Hour classHour;                                     //heure de début des cours
     private Button button;
 
-    public Day(String name, Hour classHour,Button button) {
+    public Day(int id, String name, Hour classHour,Button button) {
         this.rituels = new ArrayList<>();
+        this.id = id;
         this.name = name;
         this.classHour = classHour;
         this.calculateAlarmHour();
         this.button = button;
+        MainActivity.week1.add(this);
     }
 
     public Button getButton() {

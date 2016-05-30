@@ -17,7 +17,6 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,14 +27,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String TAG = "IAC";
 
-    private Button buttonMonday;
-    private Button buttonTuesday;
-    private Button buttonWednesday;
-    private Button buttonThursday;
-    private Button buttonFriday;
-    private Button buttonSaturday;
-    private Button buttonSunday;
-
     public static Day monday;
     public static Day tuesday;
     public static Day wednesday;
@@ -44,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static Day saturday;
     public static Day sunday;
     private final String DAY_CLICKED = null;
-    public static ArrayList<Day> week;
+    public static ArrayList<Day> week1;
     public static ArrayList<Rituel> listRituels;
 
     private EDT edt = new EDT();
@@ -84,43 +75,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void createInterface(){
-        buttonMonday = (Button) findViewById(R.id.buttonMonday);
+        Button buttonMonday = (Button) findViewById(R.id.buttonMonday);
         if (buttonMonday != null) {
             buttonMonday.setText(monday.getName() + " " + monday.getAlarmHour().getHours() + ":" + monday.getAlarmHour().getMinutes());
             buttonMonday.setOnClickListener(MainActivity.this);
         }
 
-        buttonTuesday = (Button) findViewById(R.id.buttonTuesday);
+        Button buttonTuesday = (Button) findViewById(R.id.buttonTuesday);
         if (buttonTuesday != null) {
             buttonTuesday.setText(tuesday.getName() + " " + tuesday.getAlarmHour().getHours() + ":" + tuesday.getAlarmHour().getMinutes());
             buttonTuesday.setOnClickListener(MainActivity.this);
         }
 
-        buttonWednesday = (Button) findViewById(R.id.buttonWednesday);
+        Button buttonWednesday = (Button) findViewById(R.id.buttonWednesday);
         if (buttonWednesday != null) {
             buttonWednesday.setText(wednesday.getName() + " " + wednesday.getAlarmHour().getHours() + ":" + wednesday.getAlarmHour().getMinutes());
             buttonWednesday.setOnClickListener(MainActivity.this);
         }
 
-        buttonThursday = (Button) findViewById(R.id.buttonThursday);
+        Button buttonThursday = (Button) findViewById(R.id.buttonThursday);
         if (buttonThursday != null) {
             buttonThursday.setText(thursday.getName() + " " + thursday.getAlarmHour().getHours() + ":" + thursday.getAlarmHour().getMinutes());
             buttonThursday.setOnClickListener(MainActivity.this);
         }
 
-        buttonFriday = (Button) findViewById(R.id.buttonFriday);
+        Button buttonFriday = (Button) findViewById(R.id.buttonFriday);
         if (buttonFriday != null) {
             buttonFriday.setText(friday.getName() + " " + friday.getAlarmHour().getHours() + ":" + friday.getAlarmHour().getMinutes());
             buttonFriday.setOnClickListener(MainActivity.this);
         }
 
-        buttonSaturday = (Button) findViewById(R.id.buttonSaturday);
+        Button buttonSaturday = (Button) findViewById(R.id.buttonSaturday);
         if (buttonSaturday != null) {
             buttonSaturday.setText(saturday.getName() + " " + saturday.getAlarmHour().getHours() + ":" + saturday.getAlarmHour().getMinutes());
             buttonSaturday.setOnClickListener(MainActivity.this);
         }
 
-        buttonSunday = (Button) findViewById(R.id.buttonSunday);
+        Button buttonSunday = (Button) findViewById(R.id.buttonSunday);
         if (buttonSunday != null) {
             buttonSunday.setText(sunday.getName() + " " + sunday.getAlarmHour().getHours() + ":" + sunday.getAlarmHour().getMinutes());
             buttonSunday.setOnClickListener(MainActivity.this);
@@ -134,48 +125,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setDefaultDay (){
-        week = new ArrayList<>();
-
-        String[] semaine = { "Dimanche","Lundi","Mardi","Mercredi","Jeudi", "Vendredi", "Samedi"};
-
-        int jour = new Date().getDay();
-        for(int i = 0; i<7;i++)
-        {
-            week.add(new Day(semaine[jour],new Hour(10+i,0), null));
-            jour = ++jour % 7;
-        }
-        jour = new Date().getDay();
-
-        int dim = 0; int lundi = 1;int mardi = 2; int merc = 3; int jeudi = 4; int vend = 5; int sam = 6;
-
-        System.out.println("week : " + week.size() + ". jour today : " + jour);
-
-        week.get(modNeg(dim - jour)).setButton(buttonSunday);
-        sunday    = week.get(modNeg(dim - jour));
-        week.get(modNeg(lundi - jour)).setButton(buttonMonday);
-        monday    = week.get(modNeg(lundi - jour));
-        week.get(modNeg(mardi - jour)).setButton(buttonTuesday);
-        tuesday   = week.get(modNeg(mardi - jour));
-        week.get(modNeg(merc - jour)).setButton(buttonWednesday);
-        wednesday = week.get(modNeg(merc - jour));
-        week.get(modNeg(jeudi - jour)).setButton(buttonThursday);
-        thursday  = week.get(modNeg(jeudi - jour));
-        week.get(modNeg(vend - jour)).setButton(buttonFriday);
-        friday    = week.get(modNeg(vend - jour));
-        week.get(modNeg(sam - jour)).setButton(buttonSaturday);
-        saturday  = week.get(modNeg(sam - jour));
-
-
-
-
-    }
-
-    private int modNeg(int leModulo)
-    {
-        if(leModulo < 0)
-            return 7 + leModulo;
-        return leModulo;
-
+        week1 = new ArrayList<>();
+        monday = new Day(1, "Lundi", new Hour(12, 0),(Button)findViewById(buttonMonday));
+        tuesday = new Day(1, "Mardi", new Hour(12, 0),(Button)findViewById(R.id.buttonTuesday));
+        wednesday = new Day(1, "Mercredi", new Hour(12, 0),(Button)findViewById(R.id.buttonWednesday));
+        thursday = new Day(1, "Jeudi", new Hour(12, 0),(Button)findViewById(R.id.buttonThursday));
+        friday = new Day(1, "Vendredi", new Hour(12, 0),(Button)findViewById(R.id.buttonFriday));
+        saturday = new Day(1, "Samedi", new Hour(12, 0),(Button)findViewById(R.id.buttonSaturday));
+        sunday = new Day(1, "Dimanche", new Hour(12, 0),(Button)findViewById(R.id.buttonSunday));
     }
 
     private void setDefaultRituels(){
@@ -235,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     protected void updateInterface() {
-        for (Day d : week){
+        for (Day d : week1){
             d.calculateAlarmHour();
         }
 
@@ -293,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(MainActivity.this, DaySettingsActivity.class);
-        if (v == findViewById(R.id.buttonMonday)) {
+        if (v == findViewById(buttonMonday)) {
             //sendMsg("Champignons au fromage de porc");
             intent.putExtra(DAY_CLICKED, monday.getName());
         }
@@ -347,13 +304,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //-------------------------------BLUETOOTH------------------------------------------------------
 
-    private String createBTMsg()
+    /*private String createBTMsg()
     {
-
-
-
-        return "perdu";
-    }
+        Hour pwal = monday.getAlarmHour();
+    }*/
 
     private void initBluetooth()
     {

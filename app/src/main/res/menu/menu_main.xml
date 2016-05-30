@@ -14,4 +14,10 @@
         android:orderInCategory="100"
         android:title="Syncro Bluetooth"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_CreateRituel"
+        android:orderInCategory="100"
+        android:title="Créer Rituel"
+        app:showAsAction="never"/>
 </menu>
