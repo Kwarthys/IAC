@@ -119,6 +119,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+
     }
 
     private void setDefaultDay (){
@@ -151,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
 
         bTEnabled = false;
-        initBluetooth();
+        //initBluetooth();
 
         int view = R.layout.activity_main;
         setContentView(view);
@@ -233,6 +236,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
 
+        if (id == R.id.action_Sync) {
+            tost("Perdu");
+            sendMsg(createBTMsg());
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -292,6 +301,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //-------------------------------BLUETOOTH------------------------------------------------------
+
+    /*private String createBTMsg()
+    {
+        Hour pwal = monday.getAlarmHour();
+    }*/
 
     private void initBluetooth()
     {
