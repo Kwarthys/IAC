@@ -77,7 +77,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void createInterface(){
         Button buttonMonday = (Button) findViewById(R.id.buttonMonday);
         if (buttonMonday != null) {
-            buttonMonday.setText(monday.getName() + " " + monday.getAlarmHour().getHours() + ":" + monday.getAlarmHour().getMinutes());
+            monday.getName();
+            monday.getAlarmHour().getHours();
+            monday.getAlarmHour().getMinutes();
+            //buttonMonday.setText(monday.getName() + " " + monday.getAlarmHour().getHours() + ":" + monday.getAlarmHour().getMinutes());
             buttonMonday.setOnClickListener(MainActivity.this);
         }
 
@@ -192,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     protected void updateInterface() {
+
         for (Day d : week1){
             d.calculateAlarmHour();
         }

@@ -10,18 +10,19 @@ import java.util.ArrayList;
 public class Day {
     //définit les jours
 
-    private ArrayList<Rituel> rituels = new ArrayList<>();     //liste des rituels
+    private ArrayList<Rituel> rituels;                           //liste des rituels
     private int id;                                             //id des jours
     private String name;                                        //nom des jours
     private Hour alarmHour;                                     //heure de réveil
     private Hour classHour;                                     //heure de début des cours
     private Button button;
 
-    public Day(int id, String name, Hour classHour,Button button) {
+    public Day(int id, String name, Hour classHour, Button button) {
         this.rituels = new ArrayList<>();
         this.id = id;
         this.name = name;
         this.classHour = classHour;
+        this.alarmHour = new Hour();
         this.calculateAlarmHour();
         this.button = button;
         MainActivity.week1.add(this);
@@ -84,18 +85,20 @@ public class Day {
     }
 
     public void calculateAlarmHour() {
-        Hour newAlarmHour = this.classHour;
-        if (rituels!=null) {
+        this.alarmHour.setHours(this.classHour.getHours()); this.alarmHour.setMinutes(this.classHour.getMinutes());
+        if (!rituels.isEmpty()) {
             for (Rituel r : rituels) {
                 System.out.println(r.getName());
-                newAlarmHour.setHours(this.classHour.getHours() - r.getLasting().getHours());
-                newAlarmHour.setMinutes(this.classHour.getMinutes() - r.getLasting().getMinutes());
-                if (newAlarmHour.getMinutes() < 0) {
-                    newAlarmHour.setMinutes(this.classHour.getMinutes() + 60);
-                    newAlarmHour.setHours(this.classHour.getHours() - 1);
+                this.alarmHour.setHours(this.alarmHour.getHours() - r.getLasting().getHours());
+                System.out.println(alarmHour.getHours());
+                this.alarmHour.setMinutes(this.alarmHour.getMinutes() - r.getLasting().getMinutes());
+                System.out.println(alarmHour.getMinutes());
+                if (this.alarmHour.getMinutes() < 0) {
+                    this.alarmHour.setMinutes(this.alarmHour.getMinutes() + 60);
+                    this.alarmHour.setHours(this.alarmHour.getHours() - 1);
+                    System.out.println(alarmHour.getHours() + " " + alarmHour.getMinutes());
                 }
             }
         }
-        this.setAlarmHour(newAlarmHour);
     }
 }

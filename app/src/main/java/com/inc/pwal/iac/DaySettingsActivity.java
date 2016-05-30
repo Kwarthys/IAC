@@ -46,7 +46,6 @@ public class DaySettingsActivity extends AppCompatActivity{
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    System.out.println(listNameRituels.get(position));
                     dayPassed.addRituel(MainActivity.listRituels.get(position));
                 }
             });
