@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private EDT edt = new EDT();
     //-----------------------------------------------------------------------BLUETOOTH--------------
+    private boolean bTEnabled = false;
     private boolean busy = false;
     private byte[] toLaunch;
 
@@ -67,16 +68,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 default:
                     break;
             }
-        }
-    };
-
-    protected Runnable envoiBT = new Runnable() {
-        @Override
-        public void run() {
-            busy = true;
-            mBluetoothConnection.write(toLaunch);
-            Log.d(TAG, "Envoi effectué : " + toLaunch );
-            busy=false;
         }
     };
     //-------------------------------------------------------------------FIN-BLUETOOTH--------------
@@ -153,12 +144,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState)
     {
 
-        //bluetooth();
 
         this.setDefaultDay();
         this.setDefaultRituels();
 
         super.onCreate(savedInstanceState);
+
+        bTEnabled = false;
+        initBluetooth();
 
         int view = R.layout.activity_main;
         setContentView(view);
@@ -255,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra(DAY_CLICKED, tuesday.getName());
         }
         else if (v == findViewById(R.id.buttonWednesday)){
-            //sendMsg("5800 5700 9640 654123 158;");
+            sendMsg("5800 5700 9640 654123 158;");
             intent.putExtra(DAY_CLICKED, wednesday.getName());
         }
         else if (v == findViewById(R.id.buttonThursday)) intent.putExtra(DAY_CLICKED, thursday.getName());
@@ -300,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //-------------------------------BLUETOOTH------------------------------------------------------
 
-    private void bluetooth()
+    private void initBluetooth()
     {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
@@ -315,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //connectToBluetoothServer(device.getAddress());
         // new ConnectThread(id, mHandler).start();
+        bTEnabled = true;
         selectServer();
     }
 
@@ -347,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void sendMsg(String msg)
     {
+        if(!bTEnabled)return;
         byte[] space = "        ".getBytes();
         byte[] tmp = msg.getBytes();
         int c = 0;
