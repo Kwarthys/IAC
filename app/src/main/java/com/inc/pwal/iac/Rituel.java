@@ -17,7 +17,6 @@ public class Rituel {
         this.lasting = new Hour (lastingHour,lastingMin);
         this.icone = icone;
         MainActivity.listRituels.add(this);
-        System.out.println(this.name);
     }
 
     public int getId() {

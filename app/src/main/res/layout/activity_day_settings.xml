@@ -15,5 +15,6 @@
         android:id="@+id/listViewRituels"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:longClickable="true"/>
+        android:longClickable="true"
+        android:background="#ffffff" />
 </RelativeLayout>

@@ -75,11 +75,11 @@ public class Day {
     }
 
     public void addRituel(Rituel r) {
-        boolean isDifferent = true;
-        for (Rituel rit : rituels) {
-            if (rit == r) isDifferent=false;
-        }
-        if (isDifferent)rituels.add(r);
+        if (!rituels.contains(r)) rituels.add(r);
+    }
+
+    public void removeRituel(Rituel r){
+        rituels.remove(r);
     }
 
     public void calculateAlarmHour() {
