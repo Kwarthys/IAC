@@ -55,4 +55,10 @@ public class DaySettingsActivity extends AppCompatActivity{
             dayPassed = MainActivity.getDayPressed();
         }
     }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        this.finish();
+    }
 }

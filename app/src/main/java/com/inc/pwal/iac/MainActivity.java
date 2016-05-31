@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static ArrayList<Day> week;
     public static ArrayList<Rituel> listRituels;
 
+    private Intent intent;
+
     private EDT edt = new EDT();
     //-----------------------------------------------------------------------BLUETOOTH--------------
     private boolean bTEnabled = false;
@@ -209,6 +211,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume(){
         super.onResume();
         updateInterface();
+
+        for (Rituel r : MainActivity.listRituels)System.out.println(r.getName());
     }
 
     private void launchEDT()
@@ -255,7 +259,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonSunday.setText(sunday.getName() + " " + sunday.getAlarmHour().getHours() + ":" + sunday.getAlarmHour().getMinutes());
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -284,12 +287,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
 
+        if (id == R.id.action_CreateRituel){
+            tost("Création Rituel");
+            intent = new Intent(MainActivity.this,CreateRituelsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(MainActivity.this, DaySettingsActivity.class);
+        intent = new Intent(MainActivity.this, DaySettingsActivity.class);
         if (v == findViewById(R.id.buttonMonday)) {
             intent.putExtra(DAY_CLICKED, monday.getName());
         }

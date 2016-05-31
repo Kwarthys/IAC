@@ -25,8 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ShowDevices"></activity>
+        <activity android:name=".ShowDevices" />
         <activity android:name=".DaySettingsActivity" />
+        <activity android:name=".CreateRituelsActivity"></activity>
     </application>
 
 </manifest>

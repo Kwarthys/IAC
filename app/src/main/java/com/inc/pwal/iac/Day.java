@@ -58,6 +58,7 @@ public class Day {
     }
 
     public int getId() {
+
         return id;
     }
 
@@ -74,11 +75,11 @@ public class Day {
     }
 
     public void addRituel(Rituel r) {
-        boolean isDifferent = false;
+        boolean isDifferent = true;
         for (Rituel rit : rituels) {
-            if (rit == r) isDifferent=true;
+            if (rit == r) isDifferent=false;
         }
-        if (!isDifferent)rituels.add(r);
+        if (isDifferent)rituels.add(r);
     }
 
     public void calculateAlarmHour() {
