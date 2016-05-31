@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EDT edt = new EDT();
     //-----------------------------------------------------------------------BLUETOOTH--------------
     private boolean bTEnabled = false;
+    private boolean bTEnabling = false;
     private boolean busy = false;
     private byte[] toLaunch;
 
@@ -68,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case SOCKET_CONNECTED: {
                     mBluetoothConnection = (ConnectionThread) msg.obj;
                     mBluetoothConnection.write(toLaunch);
+                    System.out.println("first ToLaunch Launch'd");
+                    bTEnabled = true;
+                    sendMsg(createBTMsg());
                     break;
                 }
                 case DATA_RECEIVED: {
@@ -148,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         jour = new Date().getDay();
         int dim = 0; int lundi = 1;int mardi = 2; int merc = 3; int jeudi = 4; int vend = 5; int sam = 6;
 
-        System.out.println("week : " + week.size() + ". jour today : " + jour);
+        //System.out.println("week : " + week.size() + ". jour today : " + jour);
 
         week.get(modNeg(dim - jour)).setButton(buttonSunday);
         sunday    = week.get(modNeg(dim - jour));
@@ -166,13 +170,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         saturday  = week.get(modNeg(sam - jour));
     }
 
-            private int modNeg(int leModulo)
-            {
-                if(leModulo < 0)
-                    return 7 + leModulo;
-                return leModulo;
-
-        }
+    private int modNeg(int leModulo)
+    {
+        if(leModulo < 0)
+            return 7 + leModulo;
+        return leModulo;
+    }
 
     private void setDefaultRituels(){
         listRituels = new ArrayList<>();
@@ -185,22 +188,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-
-
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         this.setDefaultDay();
         this.setDefaultRituels();
-
-        super.onCreate(savedInstanceState);
-
-        bTEnabled = false;
-        //initBluetooth();
 
         int view = R.layout.activity_main;
         setContentView(view);
 
-        this.createInterface();
+        createInterface();
+
+        bTEnabled = false; bTEnabling = false;
 
         //launchEDT();//Download bypass'd
 
@@ -277,9 +275,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
 
-        if (id == R.id.action_Sync) {
-            tost("Perdu");
-            //sendMsg(createBTMsg());
+        if (id == R.id.action_Sync)
+        {
+            System.out.println("Enabling BT");
+            bTInitSend();
+            System.out.println("Tryin' to send da bottl'o'message");
+            System.out.println("Bottl' sent to da seaz");
             return true;
         }
 
@@ -290,15 +291,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         Intent intent = new Intent(MainActivity.this, DaySettingsActivity.class);
         if (v == findViewById(R.id.buttonMonday)) {
-            //sendMsg("Champignons au fromage de porc");
             intent.putExtra(DAY_CLICKED, monday.getName());
         }
         else if (v == findViewById(R.id.buttonTuesday)){
-            //sendMsg("APWAL LES POMMES");
             intent.putExtra(DAY_CLICKED, tuesday.getName());
         }
         else if (v == findViewById(R.id.buttonWednesday)){
-            sendMsg("5800 5700 9640 654123 158;");
             intent.putExtra(DAY_CLICKED, wednesday.getName());
         }
         else if (v == findViewById(R.id.buttonThursday)) intent.putExtra(DAY_CLICKED, thursday.getName());
@@ -343,28 +341,61 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //-------------------------------BLUETOOTH------------------------------------------------------
 
-    /*private String createBTMsg()
+    private String createBTMsg()
     {
-        Hour pwal = monday.getAlarmHour();
-    }*/
+        long MILLISEC_A_DAY = 86400000L;
+        Date today = new Date();
+        long diff;
+        long oldDiff = 0;
+        updateInterface();
+        String toSend = "s";
+        for(int i =0; i < week.size(); i++)
+        {
+            Day d = week.get(i);
+            Date tmp = new Date();
+            tmp.setHours(d.getAlarmHour().getHours());
+            tmp.setMinutes(d.getAlarmHour().getMinutes());
+            diff = tmp.getTime() - today.getTime();
+            diff += i*MILLISEC_A_DAY;
+            if(diff > 0)
+            {
+                diff /= 1000; //On passe en seconde
+                diff -= oldDiff;
+                oldDiff += diff;
+                toSend += diff + " 1 ";
+            }
+        }
+        System.out.println(toSend + ";");
+        return toSend + ";";
+    }
+
+    private void bTInitSend()
+    {
+        if(bTEnabled)
+            sendMsg(createBTMsg());
+        else
+            initBluetooth();
+    }
 
     private void initBluetooth()
     {
+        bTEnabling = true;
+
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
         if (mBluetoothAdapter == null) {
             Log.i(TAG, "Bluetooth not supported");
             finish();
         }
 
         if (!mBluetoothAdapter.isEnabled()) {
+            System.out.println("Enfoiré");
             Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBluetoothIntent, REQUEST_ENABLE_BT);
+        }else{
+            selectServer();
         }
 
-        //connectToBluetoothServer(device.getAddress());
-        // new ConnectThread(id, mHandler).start();
-        bTEnabled = true;
-        selectServer();
     }
 
     private void selectServer() {
@@ -376,15 +407,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         + device.getAddress());
             }
         }
+
+        System.out.println("Creating da bloody Intent");
         Intent showDevicesIntent = new Intent(this, ShowDevices.class);
         showDevicesIntent.putStringArrayListExtra("devices", pairedDeviceStrings);
         startActivityForResult(showDevicesIntent, SELECT_SERVER);
     }
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SELECT_SERVER && resultCode == RESULT_OK) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {System.out.println("truc");selectServer();}
+        else if (requestCode == SELECT_SERVER && resultCode == RESULT_OK)
+        {
             BluetoothDevice device = data.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             connectToBluetoothServer(device.getAddress());
+            System.out.println("Serverrr hav' just been select'd");
         }
     }
     private void connectToBluetoothServer(String id) {
@@ -396,14 +433,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void sendMsg(String msg)
     {
-        if(!bTEnabled)return;
+        if(!bTEnabled && !bTEnabling)return;
+        while(!bTEnabled)System.out.print(".");
         byte[] space = "        ".getBytes();
         byte[] tmp = msg.getBytes();
         int c = 0;
         while(tmp.length > 8*(c+1))
         {
             toLaunch = new byte[8];
-            System.out.println("msg : " + msg.length() + " toLaunch : " + toLaunch.length);
+            //System.out.println("msg : " + msg.length() + " toLaunch : " + toLaunch.length);
             for (int i = 0; i < 8; i++) {
                 toLaunch[i] = tmp[c * 8 + i];
             }
