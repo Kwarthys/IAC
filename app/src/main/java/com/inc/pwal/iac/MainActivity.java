@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.UUID;
 
 
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private String TAG = "IAC";
@@ -355,8 +354,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (id == R.id.action_CreateRituel){
-            tost("Création Rituel");
+            tost("Création/édition Rituel");
             intent = new Intent(MainActivity.this,CreateRituelsActivity.class);
+            intent.putExtra("CLASS_FROM",MainActivity.class.toString());
             startActivity(intent);
             return true;
         }

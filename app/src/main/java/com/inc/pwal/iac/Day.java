@@ -90,7 +90,6 @@ public class Day {
         Hour newAlarmHour = new Hour(this.classHour.getHours(),this.classHour.getMinutes());
         if (rituels!=null) {
             for (Rituel r : rituels) {
-                //System.out.println(r.getName());
                 newAlarmHour.setHours(newAlarmHour.getHours() - r.getLasting().getHours());
                 newAlarmHour.setMinutes(newAlarmHour.getMinutes() - r.getLasting().getMinutes());
                 if (newAlarmHour.getMinutes() < 0) {

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class DaySettingsActivity extends AppCompatActivity{
 
     private final String DAY_CLICKED = null;
+    private final String CLASS_FROM = null;
 
     private Day dayPassed;
     private static String dayClicked;
@@ -47,6 +48,16 @@ public class DaySettingsActivity extends AppCompatActivity{
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     dayPassed.addRituel(MainActivity.listRituels.get(position));
+                }
+            });
+
+            mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent1 = new Intent(DaySettingsActivity.this, CreateRituelsActivity.class);
+                    intent1.putExtra(CLASS_FROM, DaySettingsActivity.class.toString());
+                    startActivity(intent1);
+                    return true;
                 }
             });
 
