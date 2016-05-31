@@ -22,7 +22,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonMonday"
+        android:id="@+id/buttonMondayIU"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"
@@ -31,54 +31,54 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonTuesday"
+        android:id="@+id/buttonTuesdayIU"
         android:layout_marginTop="25dp"
         android:textAlignment="center"
-        android:layout_below="@+id/buttonMonday"
+        android:layout_below="@+id/buttonMondayIU"
         android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonWednesday"
+        android:id="@+id/buttonWednesdayIU"
         android:layout_marginTop="25dp"
         android:textAlignment="center"
-        android:layout_below="@+id/buttonTuesday"
+        android:layout_below="@+id/buttonTuesdayIU"
         android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonThursday"
+        android:id="@+id/buttonThursdayIU"
         android:layout_marginTop="25dp"
         android:textAlignment="center"
-        android:layout_below="@+id/buttonWednesday"
+        android:layout_below="@+id/buttonWednesdayIU"
         android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonFriday"
+        android:id="@+id/buttonFridayIU"
         android:layout_marginTop="25dp"
         android:textAlignment="center"
-        android:layout_below="@+id/buttonThursday"
+        android:layout_below="@+id/buttonThursdayIU"
         android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonSaturday"
+        android:id="@+id/buttonSaturdayIU"
         android:layout_marginTop="25dp"
         android:textAlignment="center"
-        android:layout_below="@+id/buttonFriday"
+        android:layout_below="@+id/buttonFridayIU"
         android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonSunday"
+        android:id="@+id/buttonSundayIU"
         android:textAlignment="center"
-        android:layout_below="@+id/buttonSaturday"
+        android:layout_below="@+id/buttonSaturdayIU"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="25dp" />
 
