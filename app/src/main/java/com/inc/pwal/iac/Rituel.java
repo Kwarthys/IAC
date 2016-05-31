@@ -20,6 +20,11 @@ public class Rituel {
         //System.out.println(this.name);
     }
 
+    @Override
+    public String toString() {
+        return "NAME:" + this.name + " DURATION:" + lasting.getHours() + ":" + lasting.getMinutes() +" ";
+    }
+
     public int getId() {
         return id;
     }

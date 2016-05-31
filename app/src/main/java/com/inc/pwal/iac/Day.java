@@ -75,6 +75,7 @@ public class Day {
     }
 
     public void addRituel(Rituel r) {
+        if(r == null)return;
         boolean isDifferent = true;
         for (Rituel rit : rituels) {
             if (rit == r) isDifferent=false;

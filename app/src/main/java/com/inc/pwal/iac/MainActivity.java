@@ -16,8 +16,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button buttonFriday;
     private Button buttonSaturday;
     private Button buttonSunday;
+
+
+    int dim = 0; int lundi = 1;int mardi = 2; int merc = 3; int jeudi = 4; int vend = 5; int sam = 6;
 
     public static Day monday;
     public static Day tuesday;
@@ -51,6 +59,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Intent intent;
 
     private EDT edt = new EDT();
+    //----------------------------------SAUVEGARDE--------------------------------------------------
+
+    private String savePath = "sdcard/IAC/save/";
+    private String saveName = "save.txt";
+    private File fsave = new File(savePath + saveName);
+
     //-----------------------------------------------------------------------BLUETOOTH--------------
     private boolean bTEnabled = false;
     private boolean bTEnabling = false;
@@ -151,7 +165,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         week = new ArrayList<>();
 
         String[] semaine = {"Dimanche","Lundi","Mardi","Mercredi","Jeudi", "Vendredi", "Samedi"};
-        int dim = 0; int lundi = 1;int mardi = 2; int merc = 3; int jeudi = 4; int vend = 5; int sam = 6;
 
         int jour = new Date().getDay();
         for(int i = 0; i<7;i++)
@@ -162,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.out.println("Week fill'd");
 
         tost("Waiting EDT to process");
+        //noinspection StatementWithEmptyBody
         while(!EDT_SYNC);
 
         ArrayList<SchoolClass> ls = edt.getSchedule();
@@ -247,6 +261,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         bTEnabled = false; bTEnabling = false; UI_INIT = false;
+
+        initSave();
+
+
 
 
     }
@@ -414,12 +432,183 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return d;
     }
 
+    //--------------------------------SAUVEGARDE----------------------------------------------------
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        saveAll();
+    }
+
+    private void initSave()
+    {
+
+        if (!fsave.exists())
+        {
+            new File(savePath).mkdirs();
+        }
+
+        try {
+            readSaved();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void readSaved() throws FileNotFoundException
+    {
+        Scanner sc = new Scanner(new File(savePath + saveName));
+        if(!sc.hasNext())return;
+        System.out.println("Retrieving data at : " +savePath + saveName );
+        String buffer;
+        String[] strs;
+        while(!sc.next().contains("RITUELS:"));
+        buffer = sc.next(); //Ici, buffer vaut NAME:rituel name.
+        String leNom = "";
+        Hour rHour = new Hour();
+        while(!buffer.contains("ALARM"))
+        {
+            if(buffer.contains("NAME"))
+            {
+                strs = buffer.split(":");
+                leNom = strs[strs.length-1];
+                buffer = sc.next();
+                while(!buffer.contains("DURATION"))
+                {
+                    leNom += " " + buffer;
+                    buffer = sc.next();
+                }
+                //Buffer contient DURATION:H:M
+
+                strs = buffer.split(":");
+                createRituelIfInexistant(leNom, Integer.parseInt(strs[2]), Integer.parseInt(strs[1]));
+
+            }
+
+            buffer = sc.next();
+
+        }
+
+        // buffer contient ALARM:
+
+        int lastDaySaved = sc.nextInt();
+        int toSkip = new Date().getDay() - lastDaySaved;
+        System.out.println("Days to skip to read properly : " + toSkip + " = " + new Date().getDay() + "-" + lastDaySaved );
+        buffer = sc.next(); //Buffer a le premier DAYSTART
+        for(int i = 0; i < toSkip;)
+        {
+            System.out.println("Skipping");
+            buffer = sc.next();
+            if(buffer.contains("DAYSTART"))i++;
+        }
+        //buffer contient le premier DAYSTART a traiter
+
+        int i = 0;
+        while(!buffer.contains("FILEEND")) //Lecture jours
+        {
+            String lesRits = "";
+
+            if(buffer.contains("DAYSTART"))
+            {
+                buffer = sc.next();
+                while(!buffer.contains("DAYEND"))
+                {
+                    if(lesRits.length()>0)lesRits += " ";
+                    lesRits += buffer;
+                    buffer = sc.next();
+                }
+
+                System.out.println("Rits retrouvés : ");
+
+                strs = lesRits.split(":");
+                for(String s : strs)
+                {
+                    System.out.println(s);
+                    if(s.length() > 0)
+                    {
+                        week.get(i).addRituel(findRitByName(s));
+                    }
+                }
+
+
+                i++;
+                //Buffer contient DAYEND
+            }
+
+            buffer = sc.next();
+        }
+
+        sc.close();
+    }
+
+    private void saveAll()
+    {
+        System.out.println("Savin' ya Booty");
+
+        try {
+            FileWriter scribe = new FileWriter(fsave);
+
+            //Sauvegarde des Rituels existants
+            scribe.write(":START: RITUELS: ");
+
+            for(Rituel r : listRituels)
+            {
+                scribe.write(r.toString());
+            }
+
+            //Sauvegarde des rituels dans les differents jours, lié aux dates
+            scribe.write("ALARM: " + new Date().getDay() + " "); //jours du week(0)
+            for(int i = 0 ; i < week.size() ; i++)
+            {
+                scribe.write("DAYSTART: ");
+                for(Rituel r : week.get(i).getRituels())
+                {
+                    scribe.write(r.getName() + ":");
+                }
+                scribe.write(" DAYEND ");
+            }
+
+            scribe.write(":FILEEND:");
+            scribe.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        System.out.println("Booty secur'd");
+    }
+
+    //--------------------------------UTILITAIRE----------------------------------------------------
+
+    private void createRituelIfInexistant(String nom, int m, int h)
+    {
+        boolean found = false;
+        for(Rituel r : listRituels)
+        {
+            if(r.getName().equals(nom))found = true;
+        }
+        if(!found)
+            new Rituel(1,nom,m,h,"perdu");
+    }
+
+    private Rituel findRitByName(String name)
+    {
+        for(Rituel r : listRituels)
+        {
+            if(r.getName().equals(name))
+                return r;
+        }
+        System.out.println("RITUEL : fingByName FAILURE");
+        return null;
+    }
+
     public void tost(String toToast)
     {
         Toast.makeText(MainActivity.this, toToast, Toast.LENGTH_SHORT).show();
     }
 
-    //-------------------------------BLUETOOTH------------------------------------------------------
+    //---------------------------------BLUETOOTH----------------------------------------------------
 
     private String createBTMsg()
     {
