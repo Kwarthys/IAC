@@ -83,12 +83,14 @@ public class Day {
     }
 
     public void calculateAlarmHour(){
-        if(classHour == null)
+        if(classHour == null) {
+            System.out.println("TO DA PLANK, HERE'S NULL");
             return;
+        }
         Hour newAlarmHour = new Hour(this.classHour.getHours(),this.classHour.getMinutes());
         if (rituels!=null) {
             for (Rituel r : rituels) {
-                System.out.println(r.getName());
+                //System.out.println(r.getName());
                 newAlarmHour.setHours(newAlarmHour.getHours() - r.getLasting().getHours());
                 newAlarmHour.setMinutes(newAlarmHour.getMinutes() - r.getLasting().getMinutes());
                 if (newAlarmHour.getMinutes() < 0) {

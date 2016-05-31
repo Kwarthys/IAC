@@ -97,14 +97,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for(Day d : week)
             d.calculateAlarmHour();
 
-        buttonMonday = new Button(this);
-        buttonTuesday = new Button(this);
-        buttonWednesday = new Button(this);
-        buttonThursday = new Button(this);
-        buttonFriday = new Button(this);
-        buttonSaturday = new Button(this);
-        buttonSunday = new Button(this);
-
         buttonMonday = (Button) findViewById(R.id.buttonMondayIU);
         if(buttonMonday == null)
             System.out.println("ABANDON SHIP");
@@ -133,6 +125,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(buttonSunday == null)
             System.out.println("ABANDON SHIP");
 
+        buttonMonday.setOnClickListener(this);
+        buttonTuesday.setOnClickListener(this);
+        buttonWednesday.setOnClickListener(this);
+        buttonThursday.setOnClickListener(this);
+        buttonFriday.setOnClickListener(this);
+        buttonSaturday.setOnClickListener(this);
+        buttonSunday.setOnClickListener(this);
+
         updateInterface();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -157,10 +157,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int jour = new Date().getDay();
         for(int i = 0; i<7;i++)
         {
-            week.add(new Day(semaine[jour],new Hour(12,12), null));
+            week.add(new Day(semaine[jour],null, null));
             jour = ++jour % 7;
         }
         System.out.println("Week fill'd");
+
+        tost("Waiting EDT to process");
         while(!EDT_SYNC);
 
         ArrayList<SchoolClass> ls = edt.getSchedule();
@@ -173,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for(int i = 0; i < week.size() && !found ; i++ )
             {
 
-                System.out.println(s.getDate() + " " + week.get(i).getName());
+                //System.out.println(s.getDate() + " " + week.get(i).getName());
 
                 if(semaine[s.getDate().getDay()].equals(week.get(i).getName()))
                 {
@@ -193,6 +195,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         thursday  = week.get(modNeg(jeudi - jour));
         friday    = week.get(modNeg(vend - jour));
         saturday  = week.get(modNeg(sam - jour));
+        /*
+        System.out.println("Debug Link Buttons : " + sunday.getName());
+        System.out.println("Debug Link Buttons : " + monday.getName());
+        System.out.println("Debug Link Buttons : " + tuesday.getName());
+        System.out.println("Debug Link Buttons : " + wednesday.getName());
+        System.out.println("Debug Link Buttons : " + thursday.getName());
+        System.out.println("Debug Link Buttons : " + friday.getName());
+        System.out.println("Debug Link Buttons : " + saturday.getName());
+        */
 
         createInterface();
 
@@ -226,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
         int view = R.layout.activity_main;
 
         setContentView(view);
@@ -281,37 +293,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(tuesday.getClassHour() != null)
             buttonTuesday.setText(tuesday.getName() + " " + tuesday.getAlarmHour().getHours() + ":" + tuesday.getAlarmHour().getMinutes());
         else
-            buttonMonday.setText(tuesday.getName() + " Pas de Reveil");
+            buttonTuesday.setText(tuesday.getName() + " Pas de Reveil");
 
 
         if(wednesday.getClassHour() != null)
             buttonWednesday.setText(wednesday.getName() + " " + wednesday.getAlarmHour().getHours() + ":" + wednesday.getAlarmHour().getMinutes());
         else
-            buttonMonday.setText(wednesday.getName() + " Pas de Reveil");
+            buttonWednesday.setText(wednesday.getName() + " Pas de Reveil");
 
 
         if(thursday.getClassHour() != null)
             buttonThursday.setText(thursday.getName() + " " + thursday.getAlarmHour().getHours() + ":" + thursday.getAlarmHour().getMinutes());
         else
-            buttonMonday.setText(thursday.getName() + " Pas de Reveil");
+            buttonThursday.setText(thursday.getName() + " Pas de Reveil");
 
 
         if(friday.getClassHour() != null)
             buttonFriday.setText(friday.getName() + " " + friday.getAlarmHour().getHours() + ":" + friday.getAlarmHour().getMinutes());
         else
-            buttonMonday.setText(friday.getName() + " Pas de Reveil");
+            buttonFriday.setText(friday.getName() + " Pas de Reveil");
 
 
         if(saturday.getClassHour() != null)
             buttonSaturday.setText(saturday.getName() + " " + saturday.getAlarmHour().getHours() + ":" + saturday.getAlarmHour().getMinutes());
         else
-            buttonMonday.setText(saturday.getName() + " Pas de Reveil");
+            buttonSaturday.setText(saturday.getName() + " Pas de Reveil");
 
 
         if(sunday.getClassHour() != null)
             buttonSunday.setText(sunday.getName() + " " + sunday.getAlarmHour().getHours() + ":" + sunday.getAlarmHour().getMinutes());
         else
-            buttonMonday.setText(sunday.getName() + " Pas de Reveil");
+            buttonSunday.setText(sunday.getName() + " Pas de Reveil");
     }
 
     @Override
@@ -354,6 +366,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+
+        System.out.println("CLICK " + v);
+
         intent = new Intent(MainActivity.this, DaySettingsActivity.class);
         if (v == findViewById(R.id.buttonMondayIU)) {
             intent.putExtra(DAY_CLICKED, monday.getName());
