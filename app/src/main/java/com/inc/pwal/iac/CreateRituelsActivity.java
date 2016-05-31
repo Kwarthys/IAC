@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 public class CreateRituelsActivity extends AppCompatActivity {
 
+    private final String CLASS_FROM = null;
+
     private EditText nameField;
     private EditText hoursField;
     private EditText minutesField;
@@ -18,6 +20,14 @@ public class CreateRituelsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_rituels);
+
+        nameField = (EditText) findViewById(R.id.nameRituel);
+        hoursField = (EditText) findViewById(R.id.hourRituel);
+        minutesField = (EditText) findViewById(R.id.minutesRituel);
+
+        Bundle bundle = getIntent().getExtras();
+
+        if (DaySettingsActivity.class.toString().equals(bundle.getString(CLASS_FROM)))tost("modification");
     }
 
     @Override
@@ -28,14 +38,9 @@ public class CreateRituelsActivity extends AppCompatActivity {
 
     public void onClickValidate(View view) {
 
-        nameField = (EditText) findViewById(R.id.nameRituel);
-        hoursField = (EditText) findViewById(R.id.hourRituel);
-        minutesField = (EditText) findViewById(R.id.minutesRituel);
-
         if ((nameField.getText().length() != 0) && (hoursField.getText().length() != 0) && (minutesField.getText().length() != 0)) {
-            if ((Integer.valueOf(hoursField.getText().toString()) >= 0) && (Integer.valueOf(minutesField.getText().toString()) >= 0) && (Integer.valueOf(minutesField.getText().toString()) <= 60)) {
-                Rituel rituel = new Rituel(1, nameField.getText().toString(), Integer.parseInt(String.valueOf(hoursField.getText())), Integer.parseInt(String.valueOf(minutesField.getText())), "default");
-                //System.out.println(rituel.getName());
+            if ((Integer.valueOf(hoursField.getText().toString()) >= 2) &&(Integer.valueOf(hoursField.getText().toString()) >= 0) && (Integer.valueOf(minutesField.getText().toString()) >= 0) && (Integer.valueOf(minutesField.getText().toString()) <= 59)) {
+                new Rituel(1, nameField.getText().toString(), Integer.parseInt(String.valueOf(hoursField.getText())), Integer.parseInt(String.valueOf(minutesField.getText())), "default");
 
                 this.finish();
             } else tost("champs mal renseignés");
