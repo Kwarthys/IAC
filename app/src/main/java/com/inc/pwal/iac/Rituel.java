@@ -19,6 +19,11 @@ public class Rituel {
         MainActivity.listRituels.add(this);
     }
 
+    @Override
+    public String toString() {
+        return "NAME:" + this.name + " DURATION:" + lasting.getHours() + ":" + lasting.getMinutes() +" ";
+    }
+
     public int getId() {
         return id;
     }

@@ -75,6 +75,7 @@ public class Day {
     }
 
     public void addRituel(Rituel r) {
+        if(r == null)return;
         if (!rituels.contains(r)) rituels.add(r);
     }
 
@@ -82,7 +83,11 @@ public class Day {
         rituels.remove(r);
     }
 
-    public void calculateAlarmHour() {
+    public void calculateAlarmHour(){
+        if(classHour == null) {
+            System.out.println("TO DA PLANK, HERE'S NULL");
+            return;
+        }
         Hour newAlarmHour = new Hour(this.classHour.getHours(),this.classHour.getMinutes());
         if (rituels!=null) {
             for (Rituel r : rituels) {

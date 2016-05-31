@@ -1,5 +1,6 @@
 package com.inc.pwal.iac;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -13,11 +14,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button buttonSaturday;
     private Button buttonSunday;
 
+
+    int dim = 0; int lundi = 1;int mardi = 2; int merc = 3; int jeudi = 4; int vend = 5; int sam = 6;
+
     public static Day monday;
     public static Day tuesday;
     public static Day wednesday;
@@ -45,9 +53,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static ArrayList<Day> week;
     public static ArrayList<Rituel> listRituels;
 
+    private boolean UI_INIT = false;
+    private boolean EDT_SYNC = false;
+
     private Intent intent;
 
     private EDT edt = new EDT();
+    //----------------------------------SAUVEGARDE--------------------------------------------------
+
+    private String savePath = "sdcard/IAC/save/";
+    private String saveName = "save.txt";
+    private File fsave = new File(savePath + saveName);
+
     //-----------------------------------------------------------------------BLUETOOTH--------------
     private boolean bTEnabled = false;
     private boolean bTEnabling = false;
@@ -89,57 +106,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void createInterface(){
-        Button buttonMonday = (Button) findViewById(R.id.buttonMonday);
-        if (buttonMonday != null) {
-            buttonMonday.setText(monday.getName() + " " + monday.getAlarmHour().getHours() + ":" + monday.getAlarmHour().getMinutes());
-            buttonMonday.setOnClickListener(MainActivity.this);
-        }
 
-        Button buttonTuesday = (Button) findViewById(R.id.buttonTuesday);
-        if (buttonTuesday != null) {
-            buttonTuesday.setText(tuesday.getName() + " " + tuesday.getAlarmHour().getHours() + ":" + tuesday.getAlarmHour().getMinutes());
-            buttonTuesday.setOnClickListener(MainActivity.this);
-        }
+        for(Day d : week)
+            d.calculateAlarmHour();
 
-        Button buttonWednesday = (Button) findViewById(R.id.buttonWednesday);
-        if (buttonWednesday != null) {
-            buttonWednesday.setText(wednesday.getName() + " " + wednesday.getAlarmHour().getHours() + ":" + wednesday.getAlarmHour().getMinutes());
-            buttonWednesday.setOnClickListener(MainActivity.this);
-        }
+        buttonMonday = (Button) findViewById(R.id.buttonMondayIU);
+        if(buttonMonday == null)
+            System.out.println("ABANDON SHIP");
 
-        Button buttonThursday = (Button) findViewById(R.id.buttonThursday);
-        if (buttonThursday != null) {
-            buttonThursday.setText(thursday.getName() + " " + thursday.getAlarmHour().getHours() + ":" + thursday.getAlarmHour().getMinutes());
-            buttonThursday.setOnClickListener(MainActivity.this);
-        }
+        buttonTuesday = (Button) findViewById(R.id.buttonTuesdayIU);
+        if(buttonTuesday == null)
+            System.out.println("ABANDON SHIP");
 
-        Button buttonFriday = (Button) findViewById(R.id.buttonFriday);
-        if (buttonFriday != null) {
-            buttonFriday.setText(friday.getName() + " " + friday.getAlarmHour().getHours() + ":" + friday.getAlarmHour().getMinutes());
-            buttonFriday.setOnClickListener(MainActivity.this);
-        }
+        buttonWednesday = (Button) findViewById(R.id.buttonWednesdayIU);
+        if(buttonWednesday == null)
+            System.out.println("ABANDON SHIP");
 
-        Button buttonSaturday = (Button) findViewById(R.id.buttonSaturday);
-        if (buttonSaturday != null) {
-            buttonSaturday.setText(saturday.getName() + " " + saturday.getAlarmHour().getHours() + ":" + saturday.getAlarmHour().getMinutes());
-            buttonSaturday.setOnClickListener(MainActivity.this);
-        }
+        buttonThursday = (Button) findViewById(R.id.buttonThursdayIU);
+        if(buttonThursday == null)
+            System.out.println("ABANDON SHIP");
 
-        Button buttonSunday = (Button) findViewById(R.id.buttonSunday);
-        if (buttonSunday != null) {
-            buttonSunday.setText(sunday.getName() + " " + sunday.getAlarmHour().getHours() + ":" + sunday.getAlarmHour().getMinutes());
-            buttonSunday.setOnClickListener(MainActivity.this);
-        }
+        buttonFriday = (Button) findViewById(R.id.buttonFridayIU);
+        if(buttonFriday == null)
+            System.out.println("ABANDON SHIP");
+
+        buttonSaturday = (Button) findViewById(R.id.buttonSaturdayIU);
+        if(buttonSaturday == null)
+            System.out.println("ABANDON SHIP");
+
+        buttonSunday = (Button) findViewById(R.id.buttonSundayIU);
+        if(buttonSunday == null)
+            System.out.println("ABANDON SHIP");
+
+        buttonMonday.setOnClickListener(this);
+        buttonTuesday.setOnClickListener(this);
+        buttonWednesday.setOnClickListener(this);
+        buttonThursday.setOnClickListener(this);
+        buttonFriday.setOnClickListener(this);
+        buttonSaturday.setOnClickListener(this);
+        buttonSunday.setOnClickListener(this);
+
+        updateInterface();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        UI_INIT = true;
 
 
 
     }
 
-    private void setDefaultDay ()
+    private void initDays ()
     {
+        launchEDT();//Download bypass'd
+        System.out.println("Initiating dayz");
+
         week = new ArrayList<>();
 
         String[] semaine = {"Dimanche","Lundi","Mardi","Mercredi","Jeudi", "Vendredi", "Samedi"};
@@ -147,28 +169,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int jour = new Date().getDay();
         for(int i = 0; i<7;i++)
         {
-            week.add(new Day(semaine[jour],new Hour(10+i,new Date().getMinutes() + 2), null));
+            week.add(new Day(semaine[jour],null, null));
             jour = ++jour % 7;
         }
+        System.out.println("Week fill'd");
+
+        tost("Waiting EDT to process");
+        //noinspection StatementWithEmptyBody
+        while(!EDT_SYNC);
+
+        ArrayList<SchoolClass> ls = edt.getSchedule();
+        System.out.println("Taille de l'EDT récup' : " + ls.size());
+
+        for(int j = 0; j < ls.size();j++)
+        {
+            boolean found = false;
+            SchoolClass s = ls.get(j);
+            for(int i = 0; i < week.size() && !found ; i++ )
+            {
+
+                //System.out.println(s.getDate() + " " + week.get(i).getName());
+
+                if(semaine[s.getDate().getDay()].equals(week.get(i).getName()))
+                {
+                    week.get(i).setClassHour(new Hour(s.getDate().getHours(),s.getDate().getMinutes()));
+                    found = true;
+                }
+            }
+        }
+        System.out.println("EDT merg'd");
         jour = new Date().getDay();
-        int dim = 0; int lundi = 1;int mardi = 2; int merc = 3; int jeudi = 4; int vend = 5; int sam = 6;
 
         //System.out.println("week : " + week.size() + ". jour today : " + jour);
+        sunday    = week.get(modNeg(dim - jour));
+        monday    = week.get(modNeg(lundi - jour));
+        tuesday   = week.get(modNeg(mardi - jour));
+        wednesday = week.get(modNeg(merc - jour));
+        thursday  = week.get(modNeg(jeudi - jour));
+        friday    = week.get(modNeg(vend - jour));
+        saturday  = week.get(modNeg(sam - jour));
+        /*
+        System.out.println("Debug Link Buttons : " + sunday.getName());
+        System.out.println("Debug Link Buttons : " + monday.getName());
+        System.out.println("Debug Link Buttons : " + tuesday.getName());
+        System.out.println("Debug Link Buttons : " + wednesday.getName());
+        System.out.println("Debug Link Buttons : " + thursday.getName());
+        System.out.println("Debug Link Buttons : " + friday.getName());
+        System.out.println("Debug Link Buttons : " + saturday.getName());
+        */
+
+        createInterface();
 
         week.get(modNeg(dim - jour)).setButton(buttonSunday);
-        sunday    = week.get(modNeg(dim - jour));
         week.get(modNeg(lundi - jour)).setButton(buttonMonday);
-        monday    = week.get(modNeg(lundi - jour));
         week.get(modNeg(mardi - jour)).setButton(buttonTuesday);
-        tuesday   = week.get(modNeg(mardi - jour));
         week.get(modNeg(merc - jour)).setButton(buttonWednesday);
-        wednesday = week.get(modNeg(merc - jour));
         week.get(modNeg(jeudi - jour)).setButton(buttonThursday);
-        thursday  = week.get(modNeg(jeudi - jour));
         week.get(modNeg(vend - jour)).setButton(buttonFriday);
-        friday    = week.get(modNeg(vend - jour));
         week.get(modNeg(sam - jour)).setButton(buttonSaturday);
-        saturday  = week.get(modNeg(sam - jour));
     }
 
     private int modNeg(int leModulo)
@@ -190,18 +248,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        this.setDefaultDay();
-        this.setDefaultRituels();
 
         int view = R.layout.activity_main;
+
         setContentView(view);
 
-        createInterface();
+        initDays();
 
-        bTEnabled = false; bTEnabling = false;
+        this.setDefaultRituels();
 
-        launchEDT();//Download bypass'd
+
+        bTEnabled = false; bTEnabling = false; UI_INIT = false;
+
+        initSave();
+
+
 
 
     }
@@ -209,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume(){
         super.onResume();
-        updateInterface();
+        if(UI_INIT)updateInterface();
 
         //for (Rituel r : MainActivity.listRituels)System.out.println(r.getName());
     }
@@ -223,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     String lastring = edt.makeEDT();
                     System.out.println("Fin du Process EDT avec Signal : " + lastring);
+                    EDT_SYNC = true;
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -231,31 +295,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         t.start();
     }
 
+    @SuppressLint("SetTextI18n")
     protected void updateInterface() {
         for (Day d : week){
             d.calculateAlarmHour();
         }
 
-        buttonMonday = (Button) findViewById(R.id.buttonMonday);
-        buttonMonday.setText(monday.getName() + " " + monday.getAlarmHour().getHours() + ":" + monday.getAlarmHour().getMinutes());
+        if(monday.getClassHour() != null)
+            buttonMonday.setText(monday.getName() + " " + monday.getAlarmHour().getHours() + ":" + monday.getAlarmHour().getMinutes());
+        else
+            buttonMonday.setText(monday.getName() + " Pas de Reveil");
 
-        buttonTuesday = (Button) findViewById(R.id.buttonTuesday);
-        buttonTuesday.setText(tuesday.getName() + " " + tuesday.getAlarmHour().getHours() + ":" + tuesday.getAlarmHour().getMinutes());
 
-        buttonWednesday = (Button) findViewById(R.id.buttonWednesday);
-        buttonWednesday.setText(wednesday.getName() + " " + wednesday.getAlarmHour().getHours() + ":" + wednesday.getAlarmHour().getMinutes());
+        if(tuesday.getClassHour() != null)
+            buttonTuesday.setText(tuesday.getName() + " " + tuesday.getAlarmHour().getHours() + ":" + tuesday.getAlarmHour().getMinutes());
+        else
+            buttonTuesday.setText(tuesday.getName() + " Pas de Reveil");
 
-        buttonThursday = (Button) findViewById(R.id.buttonThursday);
-        buttonThursday.setText(thursday.getName() + " " + thursday.getAlarmHour().getHours() + ":" + thursday.getAlarmHour().getMinutes());
 
-        buttonFriday = (Button) findViewById(R.id.buttonFriday);
-        buttonFriday.setText(friday.getName() + " " + friday.getAlarmHour().getHours() + ":" + friday.getAlarmHour().getMinutes());
+        if(wednesday.getClassHour() != null)
+            buttonWednesday.setText(wednesday.getName() + " " + wednesday.getAlarmHour().getHours() + ":" + wednesday.getAlarmHour().getMinutes());
+        else
+            buttonWednesday.setText(wednesday.getName() + " Pas de Reveil");
 
-        buttonSaturday = (Button) findViewById(R.id.buttonSaturday);
-        buttonSaturday.setText(saturday.getName() + " " + saturday.getAlarmHour().getHours() + ":" + saturday.getAlarmHour().getMinutes());
 
-        buttonSunday = (Button) findViewById(R.id.buttonSunday);
-        buttonSunday.setText(sunday.getName() + " " + sunday.getAlarmHour().getHours() + ":" + sunday.getAlarmHour().getMinutes());
+        if(thursday.getClassHour() != null)
+            buttonThursday.setText(thursday.getName() + " " + thursday.getAlarmHour().getHours() + ":" + thursday.getAlarmHour().getMinutes());
+        else
+            buttonThursday.setText(thursday.getName() + " Pas de Reveil");
+
+
+        if(friday.getClassHour() != null)
+            buttonFriday.setText(friday.getName() + " " + friday.getAlarmHour().getHours() + ":" + friday.getAlarmHour().getMinutes());
+        else
+            buttonFriday.setText(friday.getName() + " Pas de Reveil");
+
+
+        if(saturday.getClassHour() != null)
+            buttonSaturday.setText(saturday.getName() + " " + saturday.getAlarmHour().getHours() + ":" + saturday.getAlarmHour().getMinutes());
+        else
+            buttonSaturday.setText(saturday.getName() + " Pas de Reveil");
+
+
+        if(sunday.getClassHour() != null)
+            buttonSunday.setText(sunday.getName() + " " + sunday.getAlarmHour().getHours() + ":" + sunday.getAlarmHour().getMinutes());
+        else
+            buttonSunday.setText(sunday.getName() + " Pas de Reveil");
     }
 
     @Override
@@ -299,20 +384,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+
+        System.out.println("CLICK " + v);
+
         intent = new Intent(MainActivity.this, DaySettingsActivity.class);
-        if (v == findViewById(R.id.buttonMonday)) {
+        if (v == findViewById(R.id.buttonMondayIU)) {
             intent.putExtra(DAY_CLICKED, monday.getName());
         }
-        else if (v == findViewById(R.id.buttonTuesday)){
+        else if (v == findViewById(R.id.buttonTuesdayIU)){
             intent.putExtra(DAY_CLICKED, tuesday.getName());
         }
-        else if (v == findViewById(R.id.buttonWednesday)){
+        else if (v == findViewById(R.id.buttonWednesdayIU)){
             intent.putExtra(DAY_CLICKED, wednesday.getName());
         }
-        else if (v == findViewById(R.id.buttonThursday)) intent.putExtra(DAY_CLICKED, thursday.getName());
-        else if (v == findViewById(R.id.buttonFriday)) intent.putExtra(DAY_CLICKED, friday.getName());
-        else if (v == findViewById(R.id.buttonSaturday)) intent.putExtra(DAY_CLICKED, saturday.getName());
-        else if (v == findViewById(R.id.buttonSunday)) intent.putExtra(DAY_CLICKED, sunday.getName());
+        else if (v == findViewById(R.id.buttonThursdayIU)) intent.putExtra(DAY_CLICKED, thursday.getName());
+        else if (v == findViewById(R.id.buttonFridayIU)) intent.putExtra(DAY_CLICKED, friday.getName());
+        else if (v == findViewById(R.id.buttonSaturdayIU)) intent.putExtra(DAY_CLICKED, saturday.getName());
+        else if (v == findViewById(R.id.buttonSundayIU)) intent.putExtra(DAY_CLICKED, sunday.getName());
         startActivity(intent);
     }
 
@@ -344,12 +432,183 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return d;
     }
 
+    //--------------------------------SAUVEGARDE----------------------------------------------------
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        saveAll();
+    }
+
+    private void initSave()
+    {
+
+        if (!fsave.exists())
+        {
+            new File(savePath).mkdirs();
+        }
+
+        try {
+            readSaved();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void readSaved() throws FileNotFoundException
+    {
+        Scanner sc = new Scanner(new File(savePath + saveName));
+        if(!sc.hasNext())return;
+        System.out.println("Retrieving data at : " +savePath + saveName );
+        String buffer;
+        String[] strs;
+        while(!sc.next().contains("RITUELS:"));
+        buffer = sc.next(); //Ici, buffer vaut NAME:rituel name.
+        String leNom = "";
+        Hour rHour = new Hour();
+        while(!buffer.contains("ALARM"))
+        {
+            if(buffer.contains("NAME"))
+            {
+                strs = buffer.split(":");
+                leNom = strs[strs.length-1];
+                buffer = sc.next();
+                while(!buffer.contains("DURATION"))
+                {
+                    leNom += " " + buffer;
+                    buffer = sc.next();
+                }
+                //Buffer contient DURATION:H:M
+
+                strs = buffer.split(":");
+                createRituelIfInexistant(leNom, Integer.parseInt(strs[2]), Integer.parseInt(strs[1]));
+
+            }
+
+            buffer = sc.next();
+
+        }
+
+        // buffer contient ALARM:
+
+        int lastDaySaved = sc.nextInt();
+        int toSkip = new Date().getDay() - lastDaySaved;
+        System.out.println("Days to skip to read properly : " + toSkip + " = " + new Date().getDay() + "-" + lastDaySaved );
+        buffer = sc.next(); //Buffer a le premier DAYSTART
+        for(int i = 0; i < toSkip;)
+        {
+            System.out.println("Skipping");
+            buffer = sc.next();
+            if(buffer.contains("DAYSTART"))i++;
+        }
+        //buffer contient le premier DAYSTART a traiter
+
+        int i = 0;
+        while(!buffer.contains("FILEEND")) //Lecture jours
+        {
+            String lesRits = "";
+
+            if(buffer.contains("DAYSTART"))
+            {
+                buffer = sc.next();
+                while(!buffer.contains("DAYEND"))
+                {
+                    if(lesRits.length()>0)lesRits += " ";
+                    lesRits += buffer;
+                    buffer = sc.next();
+                }
+
+                System.out.println("Rits retrouvés : ");
+
+                strs = lesRits.split(":");
+                for(String s : strs)
+                {
+                    System.out.println(s);
+                    if(s.length() > 0)
+                    {
+                        week.get(i).addRituel(findRitByName(s));
+                    }
+                }
+
+
+                i++;
+                //Buffer contient DAYEND
+            }
+
+            buffer = sc.next();
+        }
+
+        sc.close();
+    }
+
+    private void saveAll()
+    {
+        System.out.println("Savin' ya Booty");
+
+        try {
+            FileWriter scribe = new FileWriter(fsave);
+
+            //Sauvegarde des Rituels existants
+            scribe.write(":START: RITUELS: ");
+
+            for(Rituel r : listRituels)
+            {
+                scribe.write(r.toString());
+            }
+
+            //Sauvegarde des rituels dans les differents jours, lié aux dates
+            scribe.write("ALARM: " + new Date().getDay() + " "); //jours du week(0)
+            for(int i = 0 ; i < week.size() ; i++)
+            {
+                scribe.write("DAYSTART: ");
+                for(Rituel r : week.get(i).getRituels())
+                {
+                    scribe.write(r.getName() + ":");
+                }
+                scribe.write(" DAYEND ");
+            }
+
+            scribe.write(":FILEEND:");
+            scribe.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        System.out.println("Booty secur'd");
+    }
+
+    //--------------------------------UTILITAIRE----------------------------------------------------
+
+    private void createRituelIfInexistant(String nom, int m, int h)
+    {
+        boolean found = false;
+        for(Rituel r : listRituels)
+        {
+            if(r.getName().equals(nom))found = true;
+        }
+        if(!found)
+            new Rituel(1,nom,m,h,"perdu");
+    }
+
+    private Rituel findRitByName(String name)
+    {
+        for(Rituel r : listRituels)
+        {
+            if(r.getName().equals(name))
+                return r;
+        }
+        System.out.println("RITUEL : fingByName FAILURE");
+        return null;
+    }
+
     public void tost(String toToast)
     {
         Toast.makeText(MainActivity.this, toToast, Toast.LENGTH_SHORT).show();
     }
 
-    //-------------------------------BLUETOOTH------------------------------------------------------
+    //---------------------------------BLUETOOTH----------------------------------------------------
 
     private String createBTMsg()
     {
