@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final int DATA_RECEIVED = 3;
     public static final int SOCKET_CONNECTED = 4;
     public static final UUID APP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    @SuppressWarnings("HandlerLeak")
     public Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -143,12 +144,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         week = new ArrayList<>();
 
-        String[] semaine = { "Dimanche","Lundi","Mardi","Mercredi","Jeudi", "Vendredi", "Samedi"};
+        String[] semaine = {"Dimanche","Lundi","Mardi","Mercredi","Jeudi", "Vendredi", "Samedi"};
 
         int jour = new Date().getDay();
         for(int i = 0; i<7;i++)
         {
-            week.add(new Day(semaine[jour],new Hour(10+i,0), null));
+            week.add(new Day(semaine[jour],new Hour(10+i,new Date().getMinutes() + 2), null));
             jour = ++jour % 7;
         }
         jour = new Date().getDay();
@@ -202,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         bTEnabled = false; bTEnabling = false;
 
-        //launchEDT();//Download bypass'd
+        launchEDT();//Download bypass'd
 
 
     }
@@ -212,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         updateInterface();
 
-        for (Rituel r : MainActivity.listRituels)System.out.println(r.getName());
+        //for (Rituel r : MainActivity.listRituels)System.out.println(r.getName());
     }
 
     private void launchEDT()
@@ -372,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 diff /= 1000; //On passe en seconde
                 diff -= oldDiff;
                 oldDiff += diff;
-                toSend += diff + " 1 ";
+                toSend += diff + " 2 ";
             }
         }
         System.out.println(toSend + ";");

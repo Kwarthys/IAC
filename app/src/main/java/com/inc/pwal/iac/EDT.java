@@ -29,16 +29,24 @@ public class EDT
     @SuppressWarnings("deprecation")
     public String makeEDT() throws IOException
     {
-        //String url = "http://edt.enib.fr/ics.php?username=t3alves&pass='dDNhbHZlcw=='";
-
-        //String filename = Download.getFile(url);
+        String filename;
+        boolean bypassDownLoad = true;
+        if(bypassDownLoad)
+        {
+            System.out.println("downLoad bypass");
+            filename = "edt.ics";
+        }else {
+            String url = "http://edt.enib.fr/ics.php?username=t3alves&pass='dDNhbHZlcw=='";
+            filename = Download.getFile(url);
+        }
 
         System.out.println("MovingFile");
 
-        moveFile("sdcard/Download/","edt.ics", edtPath);
+        moveFile("sdcard/Download/", filename, edtPath);
 
-        System.out.println("downLoad bypass");
-        Scanner sc = new Scanner(new File(edtPath + "edt.ics"));
+        System.out.println("File Mov'd");
+
+        Scanner sc = new Scanner(new File(edtPath + filename));
 
         SchoolClass leCour = new SchoolClass();
 
@@ -90,10 +98,10 @@ public class EDT
             if(str.contains("DTSTART"))
             {
                 dtstart = str;
-                System.out.println(dtstart);
+                //System.out.println(dtstart);
                 String[] strs = dtstart.split(":");
                 dtstart = strs[strs.length-1];
-                System.out.println(dtstart);
+                //System.out.println(dtstart);
                 String[] s = dtstart.split("T");
                 String laDate = s[0];
                 String lHeure = s[1];
@@ -104,7 +112,7 @@ public class EDT
                 int heure = Integer.valueOf(lHeure.substring(0, 2));
                 int minute = Integer.valueOf(lHeure.substring(2, 4));
                 //System.out.println(annee + "/" + mois + "/" + jour + " : " + heure + "h" + minute);
-                Date sortie = new Date(annee-1900, mois, jour, heure, minute, 0);
+                Date sortie = new Date(annee-1900, mois-1, jour, heure, minute, 0);
                 //cours.add(sortie);
                 leCour.setDate(sortie);
             }
@@ -129,8 +137,11 @@ public class EDT
 
 
         }
-
+        System.out.println("Processin'");
         processEDT();
+
+        for(SchoolClass s : classSoon)
+            System.out.println(s.toString());
         return saveEDT();
     }
 
@@ -150,6 +161,11 @@ public class EDT
                 classSoon.add(cours.get(i));
             }
         }
+        /*
+        System.out.println("Apres premier Tri");
+        for(SchoolClass s : classSoon)
+            System.out.println(s.toString());
+        */
 
         //-------------------Nettoyage 1 UC---------------------
         for(int j = 0; j < classSoon.size(); j++) {
@@ -172,7 +188,11 @@ public class EDT
             {
                 classSoon.remove(i--); //si on le supprime il faut faire reculer le curseur d'un cran puisque la taille du ArrayList vient de changer
             }
-        }
+        }/*
+        System.out.println("Apres full Netoyage");
+        for(SchoolClass s : classSoon)
+            System.out.println(s.toString());
+         */
     }
 
     @SuppressWarnings("deprecation")
@@ -180,7 +200,7 @@ public class EDT
     {
         //return "START MATIERE " + mat + " PROF " + prof + " SALLE " + salle + " DATE " + date.getDate() + " " + date.getMonth() + " " + date.getYear() + " END ";
         ArrayList<SchoolClass> read = new ArrayList<>();
-        //System.out.println("Je suis la");
+        System.out.println("Reading Existin' Scrawlin's");
         int size = 0;
         Scanner sc;
         try {
@@ -286,6 +306,7 @@ public class EDT
     @SuppressWarnings("deprecation")
     private String saveEDT()
     {
+        System.out.println("Saving Scrawlinz");
         ArrayList<SchoolClass> read = readEDT();
 
         String laModif ="";
@@ -311,14 +332,14 @@ public class EDT
                 {
                     if(r.getDate().getHours() != s.getDate().getHours())
                     {
-                        laModif = laModif + "Modification le " + r.getDate().getDate() + "\n";
+                        laModif = laModif + "\nModification le " + r.getDate().getDate() + "/" + (r.getDate().getMonth()+1) + "\nInitialement a " + r.getDate().getHours() + "H" + r.getDate().getMinutes() + " Maintenant a " + s.getDate().getHours() + "H" + s.getDate().getMinutes() ;
                     }
                 }
             }
         }
 
         if(maxS == maxR && laModif.length()<1)
-            return null;
+            return "Nothing Modifi'd";
 
         File f = new File(edtPath + "edtsaved.txt");
         try
